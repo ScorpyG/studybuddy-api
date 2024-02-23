@@ -2,9 +2,13 @@ package com.example.studybuddyapi.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -14,11 +18,13 @@ public class Pair {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	int pairId;
 
-	@Column (name = "user_id")
-	private Long userId;
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "user_id", nullable = false)
+	private User user;
 	
-	@Column (name = "interested_user_id")
-	private Long interestUserId;
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn (name = "interested_id", nullable = false)
+	private User interestUser;
 	
 	@Column (name = "mqp")
 	private double mqp;
@@ -31,20 +37,20 @@ public class Pair {
 	
 	// Constructor
 	public Pair() {}
-	public Pair(Long userId, Long interestUserId, double mqp, boolean paired, boolean blocked) {
-		this.userId = userId;
-		this.interestUserId = interestUserId;
+	public Pair(User user, User interestUser, double mqp, boolean paired, boolean blocked) {
+		this.user = user;
+		this.interestUser = interestUser;
 		this.mqp = mqp;
 		this.paired = paired;
 		this.blocked = blocked;
 	}
 	
 	// Getters
-	public Long getUserId() {
-		return userId;
+	public User getUser() {
+		return user;
 	}
-	public Long getInterestUserId() {
-		return interestUserId;
+	public User getInterestUser() {
+		return interestUser;
 	}
 	public double getMqp() {
 		return mqp;
@@ -57,11 +63,11 @@ public class Pair {
 	}
 	
 	// Setters
-	public void setUserId(Long userId) {
-		this.userId = userId;
+	public void setUser(User user) {
+		this.user = user;
 	}
-	public void setInterestUserId(Long interestUserId) {
-		this.interestUserId = interestUserId;
+	public void setInterestUserId(User interestUser) {
+		this.interestUser = interestUser;
 	}
 	public void setMqp(double mqp) {
 		this.mqp = mqp;

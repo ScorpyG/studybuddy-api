@@ -7,8 +7,10 @@ import org.springframework.context.annotation.Bean;
 
 import com.example.studybuddyapi.model.Institution;
 import com.example.studybuddyapi.model.Program;
+import com.example.studybuddyapi.model.User;
 import com.example.studybuddyapi.repositories.IntitutionRepository;
 import com.example.studybuddyapi.repositories.ProgramRepository;
+import com.example.studybuddyapi.repositories.UserRepository;
 
 @SpringBootApplication
 public class StudybuddyapiApplication {
@@ -16,6 +18,26 @@ public class StudybuddyapiApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(StudybuddyapiApplication.class, args);
 	}
+	
+	Program[] programs = {
+			new Program("CSCI","Computer Science"),
+			new Program("PSCI","Political Science"),
+			new Program("BUS","Business"),
+			new Program("ACCT","Accounting"),
+			new Program("ECON","Economics"),
+			new Program("ENGR","Engineering"),
+			new Program("NURS","Nursing"),
+			new Program("CHEM","Chemistry"),
+	};
+	
+	Institution[] institutes = {
+			new Institution("AJAE", "Douglas College", "700 Royal Ave", "New Westminster", "British Columbia","Canada"),
+			new Institution("AUAA", "University of British Columbia", "1874 East Mall", "Vancouver", "British Columbia","Canada"),	
+			new Institution("AUAE", "Simon Fraser University", "8888 University Drive", "Burnaby", "British Columbia","Canada"),
+			new Institution("AVAD", "Vancouver Community College", "250 West Pender St.", "Vancouver", "British Columbia","Canada"),
+			new Institution("AUAF", "University of Victoria", "3800 Finnerty Rd","Victoria", "British Columbia","Canada"),	
+			new Institution("AUAY", "University of the Fraser Valley", "33844 King Road", "Abbotsford", "British Columbia","Canada"),		
+	};
 	
 	@Bean
 	ApplicationRunner initPrograms(ProgramRepository programRepo) {
@@ -77,6 +99,25 @@ public class StudybuddyapiApplication {
 			);
 			
 			institutionRepo.findAll().forEach(System.out::println);
+		};
+	}
+	
+	
+	
+	@Bean
+	ApplicationRunner initUsers(UserRepository userRepo) {
+		return args -> {
+			for (int i = 0; i <= 5; i++) {
+				userRepo.save(new User(
+						"test@" + i + ".com",
+						"testing" + i,
+						"name fn" + i,
+						"name ln" + i,
+						"testing" + i,
+						programs[i],
+						institutes[i])
+				);
+			}
 		};
 	}
 }

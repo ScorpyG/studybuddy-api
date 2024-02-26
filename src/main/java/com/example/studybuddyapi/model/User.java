@@ -38,11 +38,11 @@ public class User {
 	@Column(name = "phone_number")
 	private String phoneNumber;
 
-	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "code")
 	private Program program;
 	
-	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "institution_id")
 	private Institution institution;
 

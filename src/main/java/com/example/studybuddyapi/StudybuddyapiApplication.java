@@ -48,7 +48,6 @@ public class StudybuddyapiApplication {
 			new Institution("AJAE", "Douglas College", "700 Royal Ave", "New Westminster", "British Columbia","Canada"),
 			new Institution("AUAA", "University of British Columbia", "1874 East Mall", "Vancouver", "British Columbia","Canada"),
 			new Institution("AUAF", "University of Victoria", "3800 Finnerty Rd","Victoria", "British Columbia","Canada"),
-			new Institution("AUAY", "University of the Fraser Valley", "33844 King Road", "Abbotsford", "British Columbia","Canada"),
 			new Institution("EUAX", "University of Waterloo", "200 University Ave W", "Waterloo", "Ontario", "Canada"),
 			new Institution("EUAV", "University of Toronto", "27 King's College Cir", "Toronto", "Ontario", "Canada"),
 	};
@@ -56,7 +55,7 @@ public class StudybuddyapiApplication {
 	User[] users = {
 			new User("testinguser1@test.com", "123456", "user 1", "testing", "111-111-1111", programs[0], institutions[0]), // 0
 			new User("testinguser2@test.com", "123456", "user 2", "testing", "111-111-2222", programs[2], institutions[2]), // 1
-			new User("testinguser3@test.com", "123456", "user 3", "testing", "111-111-3333", programs[0], institutions[0]), // 2
+			new User("testinguser3@test.com", "123456", "user 3", "testing", "111-111-3333", programs[0], institutions[3]), // 2
 			new User("testinguser4@test.com", "123456", "user 4", "testing", "111-111-4444", programs[1], institutions[1]), // 3
 	};
 	

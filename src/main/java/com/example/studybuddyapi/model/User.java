@@ -1,7 +1,9 @@
 package com.example.studybuddyapi.model;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -17,6 +19,7 @@ import jakarta.persistence.Table;
 @Table(name = "users")
 public class User {
 	@Id
+	@Column(name = "user_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
@@ -34,28 +37,28 @@ public class User {
 	
 	@Column(name = "phone_number")
 	private String phoneNumber;
-	
-	@ManyToOne(fetch = FetchType.EAGER, optional = false)
-	@JoinColumn(name = "code", nullable = false)
+
+	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@JoinColumn(name = "code")
 	private Program program;
 	
-	@ManyToOne(fetch = FetchType.EAGER, optional = false)
-	@JoinColumn(name = "institution_id", nullable = false)
+	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@JoinColumn(name = "institution_id")
 	private Institution institution;
-	
-	@OneToMany(mappedBy = "user")
-	private List<Pair> pairs;
+
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Set<Pair> pairs = new HashSet<>();
 	
 	// Constructor
 	public User() {}
-	public User(String email, String password, String firstName, String lastName, String phoneNumber, Program program, Institution institude) {
+	public User(String email, String password, String firstName, String lastName, String phoneNumber, Program program, Institution institution) {
 		this.email = email;
 		this.password = password;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.phoneNumber = phoneNumber;
 		this.program = program;
-		this.institution = institude;
+		this.institution = institution;
 	}
 	
 	// Getters
@@ -83,6 +86,9 @@ public class User {
 	public Institution getInstitution() {
 		return institution;
 	}
+	public Set<Pair> getPairs() {
+		return pairs;
+	}
 	
 	// Setters
 	public void setEmail(String email) {
@@ -105,5 +111,8 @@ public class User {
 	}
 	public void setInstitution(Institution institution) {
 		this.institution = institution;
+	}
+	public void setPairs(Set<Pair> pairs) {
+		this.pairs = pairs;
 	}
 }

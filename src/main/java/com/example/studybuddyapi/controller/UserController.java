@@ -5,7 +5,6 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -27,17 +26,12 @@ public class UserController {
 	@Autowired
 	PairRepository pairRepo;
 	
-	@GetMapping("/users/{id}")
-//	https://springjavatutorial.medium.com/spring-security-login-rest-api-with-database-authentication-bb86f4a9f7b2
-	
 	@PutMapping("/users/{id}")
 	public ResponseEntity<User> updateUser(@PathVariable("id") Long id, @RequestBody User user) {
 		Optional<User> userData = userRepo.findById(id);
 		
 		if (userData.isPresent()) {
 			User updateUser = userData.get();
-//			updateUser.setEmail(user.getEmail());
-//			updateUser.setPassword(user.getPassword());
 			updateUser.setFirstName(user.getFirstName());
 			updateUser.setLastName(user.getLastName());
 			updateUser.setPhoneNumber(user.getPhoneNumber());
@@ -64,8 +58,6 @@ public class UserController {
 					user.getInstitution())
 			);
 			
-			System.out.println(newUser);
-			
 			// adding pairs for the new user into the pairs table
 			Long test = newUser.getId();
 		
@@ -87,7 +79,6 @@ public class UserController {
 		}
 	}
 	
-	
 	// Calculate the MQP
 	// TODO: separate into a class
 	private double calculateMatchQualityScore(User mainUser, User interestUser) {
@@ -96,8 +87,8 @@ public class UserController {
 		String mainUserPrg = mainUser.getProgram().getCode();
 		String interestUserPrg = interestUser.getProgram().getCode();
 		
-		String mainUserInstitution = mainUser.getInstitution().getInstitution_id();
-		String interestUserInstitution = interestUser.getInstitution().getInstitution_id();
+		String mainUserInstitution = mainUser.getInstitution().getInstitutionCode();
+		String interestUserInstitution = interestUser.getInstitution().getInstitutionCode();
 		
 		
 		// check for program of both users match add 3 points to the score

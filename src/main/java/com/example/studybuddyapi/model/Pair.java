@@ -8,23 +8,15 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "pairs")
 public class Pair {
 	@Id
+	@Column(name = "pair_id")
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	int pairId;
-
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "user_id", nullable = false)
-	private User user;
-	
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn (name = "interested_id", nullable = false)
-	private User interestUser;
 	
 	@Column (name = "mqp")
 	private double mqp;
@@ -34,6 +26,14 @@ public class Pair {
 	
 	@Column (name = "blocked")
 	private boolean blocked;
+	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "user_id")
+	private User user;
+	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "interest_user_id")
+	private User interestUser;
 	
 	// Constructor
 	public Pair() {}
@@ -46,11 +46,8 @@ public class Pair {
 	}
 	
 	// Getters
-	public User getUser() {
-		return user;
-	}
-	public User getInterestUser() {
-		return interestUser;
+	public int getPairId() {
+		return pairId;
 	}
 	public double getMqp() {
 		return mqp;
@@ -61,13 +58,16 @@ public class Pair {
 	public boolean isBlocked() {
 		return blocked;
 	}
+	public User getUser() {
+		return user;
+	}
+	public User getInterestUser() {
+		return interestUser;
+	}
 	
 	// Setters
-	public void setUser(User user) {
-		this.user = user;
-	}
-	public void setInterestUserId(User interestUser) {
-		this.interestUser = interestUser;
+	public void setPairId(int pairId) {
+		this.pairId = pairId;
 	}
 	public void setMqp(double mqp) {
 		this.mqp = mqp;
@@ -77,5 +77,11 @@ public class Pair {
 	}
 	public void setBlocked(boolean blocked) {
 		this.blocked = blocked;
+	}
+	public void setUser(User user) {
+		this.user = user;
+	}
+	public void setInterestUser(User interestUser) {
+		this.interestUser = interestUser;
 	}
 }

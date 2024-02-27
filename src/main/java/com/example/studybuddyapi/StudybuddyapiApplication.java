@@ -1,5 +1,7 @@
 package com.example.studybuddyapi;
 
+import java.util.ArrayList;
+
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -7,10 +9,12 @@ import org.springframework.context.annotation.Bean;
 
 import com.example.studybuddyapi.model.Hobby;
 import com.example.studybuddyapi.model.Institution;
+import com.example.studybuddyapi.model.Pair;
 import com.example.studybuddyapi.model.Program;
 import com.example.studybuddyapi.model.User;
 import com.example.studybuddyapi.repositories.HobbyRepository;
 import com.example.studybuddyapi.repositories.IntitutionRepository;
+import com.example.studybuddyapi.repositories.PairRepository;
 import com.example.studybuddyapi.repositories.ProgramRepository;
 import com.example.studybuddyapi.repositories.UserRepository;
 
@@ -30,159 +34,142 @@ public class StudybuddyapiApplication {
 			new Program("ENGR","Engineering"),
 			new Program("NURS","Nursing"),
 			new Program("CHEM","Chemistry"),
+			new Program("BIO","Biology"),
+			new Program("PHYS","Physics"),
+			new Program("GEOG","Geography"),
+			new Program("MATH","Mathematics"),
+			new Program("ENGL","English"),
+			new Program("PHIL","Philosophy"),
+			new Program("HIST","History"),
+			new Program("PSYC","Psychology"),
+			new Program("LAWS","Laws"),
+			new Program("CRIM","Criminology")
 	};
 	
-	Institution[] institutes = {
+	Institution[] institutions = {
 			new Institution("AJAE", "Douglas College", "700 Royal Ave", "New Westminster", "British Columbia","Canada"),
-			new Institution("AUAA", "University of British Columbia", "1874 East Mall", "Vancouver", "British Columbia","Canada"),	
-			new Institution("AUAE", "Simon Fraser University", "8888 University Drive", "Burnaby", "British Columbia","Canada"),
-			new Institution("AVAD", "Vancouver Community College", "250 West Pender St.", "Vancouver", "British Columbia","Canada"),
-			new Institution("AUAF", "University of Victoria", "3800 Finnerty Rd","Victoria", "British Columbia","Canada"),	
-			new Institution("AUAY", "University of the Fraser Valley", "33844 King Road", "Abbotsford", "British Columbia","Canada"),		
+			new Institution("AUAA", "University of British Columbia", "1874 East Mall", "Vancouver", "British Columbia","Canada"),
+			new Institution("AUAF", "University of Victoria", "3800 Finnerty Rd","Victoria", "British Columbia","Canada"),
+			new Institution("EUAX", "University of Waterloo", "200 University Ave W", "Waterloo", "Ontario", "Canada"),
+			new Institution("EUAV", "University of Toronto", "27 King's College Cir", "Toronto", "Ontario", "Canada"),
+	};
+  
+  Hobby[] hobbies = {
+      new Hobby("Basketball","Active Hobbies"),
+      new Hobby("Golf","Active Hobbies").
+      new Hobby("Running","Active Hobbies"),
+      new Hobby("Volleyball","Active Hobbies"),
+      new Hobby("Yoga","Active Hobbies"),
+      new Hobby("Soccer","Active Hobbies"),
+      new Hobby("Cheerleading","Active Hobbies"),
+      new Hobby("Swimming","Active Hobbies"),
+      new Hobby("Football","Active Hobbies"),
+      new Hobby("Other","Active Hobbies"),
+      new Hobby("Painting","Creative Hobbies"),
+    	new Hobby("Poetry writing","Creative Hobbies"),
+			new Hobby("Jewelry making","Creative Hobbies"),
+		  new Hobby("Clay crafts","Creative Hobbies"),
+			new Hobby("Magic","Creative Hobbies"),
+			new Hobby("Pottery/Ceramics","Creative Hobbies"),
+			new Hobby("Makeup art","Creative Hobbies"),
+			new Hobby("Hair styling","Creative Hobbies"),
+			new Hobby("Photography","Creative Hobbies"),
+			new Hobby("Sewing","Creative Hobbies"),
+			new Hobby("Knitting","Creative Hobbies"),
+			new Hobby("Embroidery","Creative Hobbies"),
+			new Hobby("Crochet","Creative Hobbies"),
+			new Hobby("Acting","Creative Hobbies"),
+			new Hobby("Gardening","Creative Hobbies"),
+			new Hobby("Design","Creative Hobbies"),
+			new Hobby("Other","Creative Hobbies"),
+    	new Hobby("Singing","Musical Hobbies"),
+			new Hobby("Dancing","Musical Hobbies"),
+			new Hobby("Listening to music","Musical Hobbies"),
+			new Hobby("Playing instruments","Musical Hobbies"),
+			new Hobby("Other","Musical Hobbies"),
+    	new Hobby("Reading","Mental Hobbies"),
+			new Hobby("Journaling","Mental Hobbies"),
+			new Hobby("Writing","Mental Hobbies"),
+			new Hobby("Crossword puzzles","Mental Hobbies"),
+			new Hobby("Sudoku","Mental Hobbies"),
+			new Hobby("Word scrambles","Mental Hobbies"),
+			new Hobby("Other","Mental Hobbies"),
+			new Hobby("Pilates","Active Hobbies"),
+			new Hobby("Ice skating","Active Hobbies"),
+      new Hobby("Stretching","Active Hobbies"),
+      new Hobby("Hiking","Active Hobbies"),
+			new Hobby("Fishing","Active Hobbies"),
+			new Hobby("Skiing","Active Hobbies"),
+			new Hobby("Weight lifting","Active Hobbies"),
+			new Hobby("Kickboxing","Active Hobbies"),
+			new Hobby("Boxing","Active Hobbies"),
+			new Hobby("Board games","Active Hobbies"),
+  };
+	
+  // TODO: update User class to incoporate hobby
+	User[] users = {
+			new User("testinguser1@test.com", "123456", "user 1", "testing", "111-111-1111", programs[0], institutions[0]), // 0
+			new User("testinguser2@test.com", "123456", "user 2", "testing", "111-111-2222", programs[2], institutions[2]), // 1
+			new User("testinguser3@test.com", "123456", "user 3", "testing", "111-111-3333", programs[0], institutions[3]), // 2
+			new User("testinguser4@test.com", "123456", "user 4", "testing", "111-111-4444", programs[1], institutions[1]), // 3
 	};
 	
-	@Bean
-	ApplicationRunner initPrograms(ProgramRepository programRepo) {
-		return args -> {
-			programRepo.save(new Program("CSCI","Computer Science"));
-			programRepo.save(new Program("PSCI","Political Science"));
-			programRepo.save(new Program("BUS","Business"));
-			programRepo.save(new Program("ACCT","Accounting"));
-			programRepo.save(new Program("ECON","Economics"));
-			programRepo.save(new Program("ENGR","Engineering"));
-			programRepo.save(new Program("NURS","Nursing"));
-			programRepo.save(new Program("CHEM","Chemistry"));
-			programRepo.save(new Program("BIO","Biology"));
-			programRepo.save(new Program("PHYS","Physics"));
-			programRepo.save(new Program("GEOG","Geography"));
-			programRepo.save(new Program("MATH","Mathematics"));
-			programRepo.save(new Program("ENGL","English"));
-			programRepo.save(new Program("PHIL","Philosophy"));
-			programRepo.save(new Program("HIST","History"));
-			programRepo.save(new Program("PSYC","Psychology"));
-			programRepo.save(new Program("LAWS","Laws"));
-			programRepo.save(new Program("CRIM","Criminology"));
-			programRepo.save(new Program("FINC","Finance"));
-			programRepo.save(new Program("EDUC","Education"));
-			programRepo.save(new Program("MUSC","Musics"));
-			programRepo.save(new Program("PEFA","Performing & Fine Art"));
-			programRepo.save(new Program("SCMG","Supply Chain Management"));
-			
-			programRepo.findAll().forEach(System.out::println);
-		};
-	}
-	
-	@Bean
-	ApplicationRunner initInstitutions(IntitutionRepository institutionRepo) {
-		return args -> {
-			institutionRepo.save(
-					new Institution("AJAE", "Douglas College", "700 Royal Ave",
-							"New Westminster", "British Columbia","Canada")
-			);
-			institutionRepo.save(
-					new Institution("AUAA", "University of British Columbia", "1874 East Mall",
-							"Vancouver", "British Columbia","Canada")
-			);
-			institutionRepo.save(
-					new Institution("AUAE", "Simon Fraser University", "8888 University Drive",
-							"Burnaby", "British Columbia","Canada")
-			);
-			institutionRepo.save(
-					new Institution("AVAD", "Vancouver Community College", "250 West Pender St.",
-							"Vancouver", "British Columbia","Canada")
-			);
-			institutionRepo.save(
-					new Institution("AUAF", "University of Victoria", "3800 Finnerty Rd",
-							"Victoria", "British Columbia","Canada")
-			);
-			institutionRepo.save(
-					new Institution("AUAY", "University of the Fraser Valley", "33844 King Road",
-							"Abbotsford", "British Columbia","Canada")
-			);
-			
-			institutionRepo.findAll().forEach(System.out::println);
-		};
-	}
-	
-	
-	@Bean
-	ApplicationRunner initHobbies (HobbyRepository hobbyRepo) {
-		return args -> {
-			hobbyRepo.save(new Hobby("Basketball","Active Hobbies"));
-			hobbyRepo.save(new Hobby("Golf","Active Hobbies"));
-			hobbyRepo.save(new Hobby("Running","Active Hobbies"));
-			hobbyRepo.save(new Hobby("Soccer","Active Hobbies"));
-			hobbyRepo.save(new Hobby("Volleyball","Active Hobbies"));
-			hobbyRepo.save(new Hobby("Yoga","Active Hobbies"));
-			hobbyRepo.save(new Hobby("Pilates","Active Hobbies"));
-			hobbyRepo.save(new Hobby("Swimming","Active Hobbies"));
-			hobbyRepo.save(new Hobby("Ice skating","Active Hobbies"));
-			hobbyRepo.save(new Hobby("Football","Active Hobbies"));
-			hobbyRepo.save(new Hobby("Stretching","Active Hobbies"));
-			hobbyRepo.save(new Hobby("Hiking","Active Hobbies"));
-			hobbyRepo.save(new Hobby("Cheerleading","Active Hobbies"));
-			hobbyRepo.save(new Hobby("Fishing","Active Hobbies"));
-			hobbyRepo.save(new Hobby("Skiing","Active Hobbies"));
-			hobbyRepo.save(new Hobby("Weight lifting","Active Hobbies"));
-			hobbyRepo.save(new Hobby("Kickboxing","Active Hobbies"));
-			hobbyRepo.save(new Hobby("Boxing","Active Hobbies"));
-			hobbyRepo.save(new Hobby("Board games","Active Hobbies"));
-			hobbyRepo.save(new Hobby("Other","Active Hobbies"));
-
-			hobbyRepo.save(new Hobby("Painting","Creative Hobbies"));
-			hobbyRepo.save(new Hobby("Poetry writing","Creative Hobbies"));
-			hobbyRepo.save(new Hobby("Jewelry making","Creative Hobbies"));
-			hobbyRepo.save(new Hobby("Clay crafts","Creative Hobbies"));
-			hobbyRepo.save(new Hobby("Magic","Creative Hobbies"));
-			hobbyRepo.save(new Hobby("Pottery/Ceramics","Creative Hobbies"));
-			hobbyRepo.save(new Hobby("Makeup art","Creative Hobbies"));
-			hobbyRepo.save(new Hobby("Hair styling","Creative Hobbies"));
-			hobbyRepo.save(new Hobby("Photography","Creative Hobbies"));
-			hobbyRepo.save(new Hobby("Sewing","Creative Hobbies"));
-			hobbyRepo.save(new Hobby("Knitting","Creative Hobbies"));
-			hobbyRepo.save(new Hobby("Embroidery","Creative Hobbies"));
-			hobbyRepo.save(new Hobby("Crochet","Creative Hobbies"));
-			hobbyRepo.save(new Hobby("Acting","Creative Hobbies"));
-			hobbyRepo.save(new Hobby("Gardening","Creative Hobbies"));
-			hobbyRepo.save(new Hobby("Design","Creative Hobbies"));
-			hobbyRepo.save(new Hobby("Other","Creative Hobbies"));
-			
-			hobbyRepo.save(new Hobby("Reading","Mental Hobbies"));
-			hobbyRepo.save(new Hobby("Journaling","Mental Hobbies"));
-			hobbyRepo.save(new Hobby("Writing","Mental Hobbies"));
-			hobbyRepo.save(new Hobby("Crossword puzzles","Mental Hobbies"));
-			hobbyRepo.save(new Hobby("Sudoku","Mental Hobbies"));
-			hobbyRepo.save(new Hobby("Word scrambles","Mental Hobbies"));
-			hobbyRepo.save(new Hobby("Languages","Mental Hobbies"));
-			hobbyRepo.save(new Hobby("Games","Mental Hobbies"));
-			hobbyRepo.save(new Hobby("Podcasts","Mental Hobbies"));
-			hobbyRepo.save(new Hobby("Other","Mental Hobbies"));
-			
-
-			hobbyRepo.save(new Hobby("Singing","Musical Hobbies"));
-			hobbyRepo.save(new Hobby("Dancing","Musical Hobbies"));
-			hobbyRepo.save(new Hobby("Listening to music","Musical Hobbies"));
-			hobbyRepo.save(new Hobby("Playing instruments","Musical Hobbies"));
-			hobbyRepo.save(new Hobby("Other","Musical Hobbies"));
-			
-			
-		};
-	}
-	
-	@Bean
-	ApplicationRunner initUsers(UserRepository userRepo) {
-		return args -> {
-			for (int i = 0; i <= 5; i++) {
-				userRepo.save(new User(
-						"test@" + i + ".com",
-						"testing" + i,
-						"name fn" + i,
-						"name ln" + i,
-						"testing" + i,
-						programs[i],
-						institutes[i])
-				);
+	private void loadTestData(ProgramRepository programRepo, IntitutionRepository institutionRepo, HobbyRepository hobbyRepo, UserRepository userRepo, PairRepository pairRepo) {
+		ArrayList<Program> programList = new ArrayList<>();
+		ArrayList<Institution> institutionList = new ArrayList<>();
+    ArrayList<Hobby> hobbyList = new ArrayList<>();
+		ArrayList<User> userList = new ArrayList<>();
+		ArrayList<Pair> pairList = new ArrayList<>();
+		
+		// Create programs
+		for (int i = 0; i < programs.length; i++) {
+			programList.add(programs[i]);
+		}
+		programRepo.saveAll(programList);
+		
+		// Create institutions
+		for (int i = 0; i < institutions.length; i++) {
+			institutionList.add(institutions[i]);
+		}
+		institutionRepo.saveAll(institutionList);
+    
+    // Create hobbies
+    for (int i = 0; , i < hobbies.length; i++) {
+      hobbyList.add(hobbies[i]);
+    }
+    hobbyRepo.saveAll(hobbyList);
+		
+		// Create users
+		for (int i = 0; i < users.length; i++) {
+			userList.add(users[i]);
+		}
+		userRepo.saveAll(userList);
+		
+		// Create pairs
+		for (int i = 0; i < users.length; i++) {
+			for (int j = 0; j < users.length; j++) {
+				if (i != j) {
+					double randomMqp = Math.round(((Math.random() * 5.4) * 100.0 ) / 100.0);
+					Pair newPair = new Pair(users[i], users[j], randomMqp, false, false);
+					
+					pairList.add(newPair);
+				}
 			}
+		}
+		pairRepo.saveAll(pairList);
+  
+		System.out.print("\nServer is running on localhost:8080\n");
+		programRepo.findAll().forEach(System.out::println);
+		institutionRepo.findAll().forEach(System.out::println);
+    hobbyRepo.findAll().forEach(System.out::println);
+		userRepo.findAll().forEach(System.out::println);
+		pairRepo.findAll().forEach(System.out::println);
+	}
+
+	@Bean
+	ApplicationRunner initPrograms(ProgramRepository programRepo, IntitutionRepository institutionRepo, HobbyRepository hobbyRepo, UserRepository userRepo, PairRepository pairRepo) {
+		return args -> {			
+			loadTestData(programRepo, institutionRepo, hobbyRepo, userRepo, pairRepo);
 		};
 	}
 }

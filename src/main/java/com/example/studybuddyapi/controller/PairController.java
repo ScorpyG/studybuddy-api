@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,8 +28,8 @@ public class PairController {
 	@Autowired
 	UserRepository userRepo;
 	
-	@GetMapping("/pairs/{id}")
-	public ResponseEntity<List<User>> getListOfStudyBuddies(@PathVariable("id") long id) {
+	@GetMapping("/pairs/{userId}")
+	public ResponseEntity<List<User>> getListOfStudyBuddies(@PathVariable("userId") long id) {
 		try {
 			Optional<User> userData = userRepo.findById(id);
 			List<Pair> pairs = new ArrayList<>();
@@ -37,21 +39,22 @@ public class PairController {
 			if (userData.isPresent()) {
 				pairRepo.findByUserId(id).forEach(pairs::add);
 				
-				// O(n)
-				pairs.removeIf(pair -> pair.isBlocked() || pair.isPaired());
+				// O(n) This line check for pair of the main user and associated user
+				// that being blocked or interested then remove it from the curated list
+				pairs.removeIf(pair -> pair.isBlocked() || pair.isInterested());
 				
-				// O(n log n)
+				// O(n log n) Sort the user with highest to lowest mqp(match quality point)
 				pairs.sort((Pair pair1, Pair pair2) -> { 
 					if (pair1.getMqp() > pair2.getMqp()) {
-						return -1; // USER with higher MQP should be at the top of the list
+						return -1;
 					} else if (pair1.getMqp() < pair2.getMqp()) {
-						return 1; // USER with lesser MQP should be at the bottom of the list
+						return 1;
 					} else {
 						return 0;
 					}
 				});
 				
-				// O(n)
+				// add the all the interest users to the curated list O(n)
 				for (Pair pair : pairs) {
 					curatedList.add(pair.getInterestUser());
 				}
@@ -61,6 +64,58 @@ public class PairController {
 			} else {
 				return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
 			}
+		} catch (Exception e) {
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@PutMapping("/pairs/{pairId}")
+	public ResponseEntity<Pair> updatePairData(@PathVariable("pairId") int id, @RequestBody Pair pair) {
+		try {
+			Optional<Pair> pairData = pairRepo.findById(id);
+			
+			if (pairData.isPresent()) {
+				Pair currentPair = pairData.get();
+				currentPair.setPaired(pair.isInterested());
+				currentPair.setBlocked(pair.isBlocked());
+				
+				return new ResponseEntity<>(pairRepo.save(currentPair), HttpStatus.OK);
+				
+			} else {
+				return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+			}
+		} catch (Exception e) {
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@GetMapping("/paired/{userId}")
+	public ResponseEntity<List<User>> getListOfPairedStudyBuddies(@PathVariable("userId") long id) {
+		try {
+			Optional<User> userData = userRepo.findById(id);
+			List<Pair> studybuddies = new ArrayList<>();
+			
+			// TODO: validate all the interested users if
+			// they also shared interest in the current user
+			if (userData.isPresent()) {
+				pairRepo.findByInterestUserId(id).forEach(studybuddies::add);
+				
+				// 1. iterate through the list of interest_user_id of the main user (user_id)
+				// find all the records from pairs table that the main user has an interest with
+				// --> This list only check and return the pairs with INTERESTED column being true;
+				// Pair
+				
+				
+				// 2. iterate through the pairs table where match the user_id with interest_user_id
+				// of the main user. This list cross check the INTERESTED column with TRUE value
+				// --> return it accordingly.
+				
+				return null;
+				
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+			}
+			
 		} catch (Exception e) {
 			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 		}

@@ -1,6 +1,7 @@
 package com.example.studybuddyapi;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
@@ -150,7 +151,9 @@ public class StudybuddyapiApplication {
 			for (int j = 0; j < users.length; j++) {
 				if (i != j) {
 					double randomMqp = Math.round(((Math.random() * 5.4) * 100.0 ) / 100.0);
-					Pair newPair = new Pair(users[i], users[j], randomMqp, false, false);
+					Random rd = new Random();
+					// new User (currentUser, associatedUser, mqp, interested, blocked)
+					Pair newPair = new Pair(users[i], users[j], randomMqp, rd.nextBoolean(), false);
 					
 					pairList.add(newPair);
 				}
@@ -168,7 +171,8 @@ public class StudybuddyapiApplication {
 
 	@Bean
 	ApplicationRunner initPrograms(ProgramRepository programRepo, IntitutionRepository institutionRepo, HobbyRepository hobbyRepo, UserRepository userRepo, PairRepository pairRepo) {
-		return args -> {			
+		return args -> {
+			// populate the API with data
 			loadTestData(programRepo, institutionRepo, hobbyRepo, userRepo, pairRepo);
 		};
 	}

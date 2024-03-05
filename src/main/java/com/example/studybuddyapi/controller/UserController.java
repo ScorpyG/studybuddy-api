@@ -30,17 +30,21 @@ public class UserController {
 	public ResponseEntity<User> updateUser(@PathVariable("id") Long id, @RequestBody User user) {
 		Optional<User> userData = userRepo.findById(id);
 		
-		if (userData.isPresent()) {
-			User updateUser = userData.get();
-			updateUser.setFirstName(user.getFirstName());
-			updateUser.setLastName(user.getLastName());
-			updateUser.setPhoneNumber(user.getPhoneNumber());
-			updateUser.setInstitution(user.getInstitution());
-			updateUser.setProgram(user.getProgram());
-			
-			return new ResponseEntity<>(userRepo.save(updateUser), HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND); 		
+		try {
+			if (userData.isPresent()) {
+				User updateUser = userData.get();
+				updateUser.setFirstName(user.getFirstName());
+				updateUser.setLastName(user.getLastName());
+				updateUser.setPhoneNumber(user.getPhoneNumber());
+				updateUser.setInstitution(user.getInstitution());
+				updateUser.setProgram(user.getProgram());
+				
+				return new ResponseEntity<>(userRepo.save(updateUser), HttpStatus.OK);
+			} else {
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND); 		
+			}
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 	

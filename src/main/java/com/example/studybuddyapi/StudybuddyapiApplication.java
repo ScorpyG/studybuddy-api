@@ -154,7 +154,7 @@ public class StudybuddyapiApplication {
 					Random rd = new Random();
 					// new User (currentUser, associatedUser, mqp, interested, blocked)
 					Pair newPair = new Pair(users[i], users[j], randomMqp, rd.nextBoolean(), false);
-					
+//					Pair newPair = new Pair(users[i], users[j], randomMqp, true, false);
 					pairList.add(newPair);
 				}
 			}

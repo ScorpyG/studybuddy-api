@@ -3,6 +3,8 @@ package com.example.studybuddyapi.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -40,13 +42,16 @@ public class User {
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "code")
+	@JsonIgnore
 	private Program program;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "institution_id")
+	@JsonIgnore
 	private Institution institution;
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JsonIgnore
 	private Set<Pair> pairs = new HashSet<>();
 	
 	// Constructor

@@ -94,26 +94,20 @@ public class PairController {
 		try {
 			Optional<User> userData = userRepo.findById(id);
 			List<Pair> studybuddies = new ArrayList<>();
+			List<User> matchedUsers = new ArrayList<>();
 			
-			// TODO: validate all the interested users if
-			// they also shared interest in the current user
 			if (userData.isPresent()) {
-				pairRepo.findByInterestUserId(id).forEach(studybuddies::add);
+				pairRepo.findAllMatchedPairs(id).forEach(studybuddies::add);
 				
-				// 1. iterate through the list of interest_user_id of the main user (user_id)
-				// find all the records from pairs table that the main user has an interest with
-				// --> This list only check and return the pairs with INTERESTED column being true;
-				// Pair
+				for (Pair matchedPair : studybuddies) {
+					System.out.println(matchedPair.getInterestUser().getId());
+					matchedUsers.add(matchedPair.getInterestUser());
+				}
 				
-				
-				// 2. iterate through the pairs table where match the user_id with interest_user_id
-				// of the main user. This list cross check the INTERESTED column with TRUE value
-				// --> return it accordingly.
-				
-				return null;
+				return new ResponseEntity<>(matchedUsers, HttpStatus.OK);
 				
 			} else {
-				return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 			}
 			
 		} catch (Exception e) {

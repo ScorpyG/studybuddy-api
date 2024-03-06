@@ -22,7 +22,6 @@ public class InstitutionController {
 	
 	@GetMapping("/institutions")
 	public ResponseEntity<List<Institution>> getAllInstitutions(
-			@RequestParam(name = "name", required = false) String name,
 			@RequestParam(name = "country", required = false) String country,
 			@RequestParam(name = "state", required = false) String state,
 			@RequestParam(name = "city", required = false) String city
@@ -30,10 +29,8 @@ public class InstitutionController {
 		try {
 			List<Institution> institutions = new ArrayList<Institution>();
 			
-			if (name == null && city == null && state == null && country == null) {
+			if (city == null && state == null && country == null) {
 				institutionRepo.findAll().forEach(institutions::add);
-			} else if (name != null) {
-				institutionRepo.findByName(name).forEach(institutions::add);
 			} else if (country != null) {
 				institutionRepo.findByCountry(country).forEach(institutions::add);
 			} else if (state != null) {

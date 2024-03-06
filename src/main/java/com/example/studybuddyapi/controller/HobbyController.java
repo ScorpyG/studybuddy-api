@@ -19,8 +19,6 @@ import com.example.studybuddyapi.repositories.HobbyRepository;
 @RestController
 @RequestMapping("/api")
 public class HobbyController {
-	
-	
 	@Autowired
 	HobbyRepository hobbyRepo;
 	

@@ -1,5 +1,7 @@
 package com.example.studybuddyapi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -21,27 +23,29 @@ public class Pair {
 	@Column (name = "mqp")
 	private double mqp;
 	
-	@Column (name = "paired")
-	private boolean paired;
+	@Column (name = "interested")
+	private boolean interested;
 	
 	@Column (name = "blocked")
 	private boolean blocked;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "user_id")
+	@JsonIgnore
 	private User user;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "interest_user_id")
+	@JsonIgnore
 	private User interestUser;
 	
 	// Constructor
 	public Pair() {}
-	public Pair(User user, User interestUser, double mqp, boolean paired, boolean blocked) {
+	public Pair(User user, User interestUser, double mqp, boolean interested, boolean blocked) {
 		this.user = user;
 		this.interestUser = interestUser;
 		this.mqp = mqp;
-		this.paired = paired;
+		this.interested = interested;
 		this.blocked = blocked;
 	}
 	
@@ -52,8 +56,8 @@ public class Pair {
 	public double getMqp() {
 		return mqp;
 	}
-	public boolean isPaired() {
-		return paired;
+	public boolean isInterested() {
+		return interested;
 	}
 	public boolean isBlocked() {
 		return blocked;
@@ -72,8 +76,8 @@ public class Pair {
 	public void setMqp(double mqp) {
 		this.mqp = mqp;
 	}
-	public void setPaired(boolean paired) {
-		this.paired = paired;
+	public void setPaired(boolean interested) {
+		this.interested = interested;
 	}
 	public void setBlocked(boolean blocked) {
 		this.blocked = blocked;

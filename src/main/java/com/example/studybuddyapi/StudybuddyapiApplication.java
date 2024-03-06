@@ -1,6 +1,7 @@
 package com.example.studybuddyapi;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
@@ -53,22 +54,22 @@ public class StudybuddyapiApplication {
 			new Institution("EUAX", "University of Waterloo", "200 University Ave W", "Waterloo", "Ontario", "Canada"),
 			new Institution("EUAV", "University of Toronto", "27 King's College Cir", "Toronto", "Ontario", "Canada"),
 	};
-  
-  Hobby[] hobbies = {
-      new Hobby("Basketball","Active Hobbies"),
-      new Hobby("Golf","Active Hobbies").
-      new Hobby("Running","Active Hobbies"),
-      new Hobby("Volleyball","Active Hobbies"),
-      new Hobby("Yoga","Active Hobbies"),
-      new Hobby("Soccer","Active Hobbies"),
-      new Hobby("Cheerleading","Active Hobbies"),
-      new Hobby("Swimming","Active Hobbies"),
-      new Hobby("Football","Active Hobbies"),
-      new Hobby("Other","Active Hobbies"),
-      new Hobby("Painting","Creative Hobbies"),
-    	new Hobby("Poetry writing","Creative Hobbies"),
+	
+	Hobby[] hobbies = {
+			new Hobby("Basketball","Active Hobbies"),
+			new Hobby("Golf","Active Hobbies"),
+			new Hobby("Running","Active Hobbies"),
+			new Hobby("Volleyball","Active Hobbies"),
+			new Hobby("Yoga","Active Hobbies"),
+			new Hobby("Soccer","Active Hobbies"),
+			new Hobby("Cheerleading","Active Hobbies"),
+			new Hobby("Swimming","Active Hobbies"),
+			new Hobby("Football","Active Hobbies"),
+			new Hobby("Other","Active Hobbies"),
+			new Hobby("Painting","Creative Hobbies"),
+			new Hobby("Poetry writing","Creative Hobbies"),
 			new Hobby("Jewelry making","Creative Hobbies"),
-		  new Hobby("Clay crafts","Creative Hobbies"),
+			new Hobby("Clay crafts","Creative Hobbies"),
 			new Hobby("Magic","Creative Hobbies"),
 			new Hobby("Pottery/Ceramics","Creative Hobbies"),
 			new Hobby("Makeup art","Creative Hobbies"),
@@ -82,12 +83,12 @@ public class StudybuddyapiApplication {
 			new Hobby("Gardening","Creative Hobbies"),
 			new Hobby("Design","Creative Hobbies"),
 			new Hobby("Other","Creative Hobbies"),
-    	new Hobby("Singing","Musical Hobbies"),
+			new Hobby("Singing","Musical Hobbies"),
 			new Hobby("Dancing","Musical Hobbies"),
 			new Hobby("Listening to music","Musical Hobbies"),
 			new Hobby("Playing instruments","Musical Hobbies"),
 			new Hobby("Other","Musical Hobbies"),
-    	new Hobby("Reading","Mental Hobbies"),
+			new Hobby("Reading","Mental Hobbies"),
 			new Hobby("Journaling","Mental Hobbies"),
 			new Hobby("Writing","Mental Hobbies"),
 			new Hobby("Crossword puzzles","Mental Hobbies"),
@@ -96,17 +97,17 @@ public class StudybuddyapiApplication {
 			new Hobby("Other","Mental Hobbies"),
 			new Hobby("Pilates","Active Hobbies"),
 			new Hobby("Ice skating","Active Hobbies"),
-      new Hobby("Stretching","Active Hobbies"),
-      new Hobby("Hiking","Active Hobbies"),
+			new Hobby("Stretching","Active Hobbies"),
+			new Hobby("Hiking","Active Hobbies"),
 			new Hobby("Fishing","Active Hobbies"),
 			new Hobby("Skiing","Active Hobbies"),
 			new Hobby("Weight lifting","Active Hobbies"),
 			new Hobby("Kickboxing","Active Hobbies"),
 			new Hobby("Boxing","Active Hobbies"),
-			new Hobby("Board games","Active Hobbies"),
-  };
+			new Hobby("Board games","Active Hobbies")
+	};
 	
-  // TODO: update User class to incoporate hobby
+	// TODO: update User class to incorporate hobby
 	User[] users = {
 			new User("testinguser1@test.com", "123456", "user 1", "testing", "111-111-1111", programs[0], institutions[0]), // 0
 			new User("testinguser2@test.com", "123456", "user 2", "testing", "111-111-2222", programs[2], institutions[2]), // 1
@@ -117,7 +118,7 @@ public class StudybuddyapiApplication {
 	private void loadTestData(ProgramRepository programRepo, IntitutionRepository institutionRepo, HobbyRepository hobbyRepo, UserRepository userRepo, PairRepository pairRepo) {
 		ArrayList<Program> programList = new ArrayList<>();
 		ArrayList<Institution> institutionList = new ArrayList<>();
-    ArrayList<Hobby> hobbyList = new ArrayList<>();
+		ArrayList<Hobby> hobbyList = new ArrayList<>();
 		ArrayList<User> userList = new ArrayList<>();
 		ArrayList<Pair> pairList = new ArrayList<>();
 		
@@ -133,11 +134,11 @@ public class StudybuddyapiApplication {
 		}
 		institutionRepo.saveAll(institutionList);
     
-    // Create hobbies
-    for (int i = 0; , i < hobbies.length; i++) {
-      hobbyList.add(hobbies[i]);
-    }
-    hobbyRepo.saveAll(hobbyList);
+	    // Create hobbies
+	    for (int i = 0; i < hobbies.length; i++) {
+	      hobbyList.add(hobbies[i]);
+	    }
+	    hobbyRepo.saveAll(hobbyList);
 		
 		// Create users
 		for (int i = 0; i < users.length; i++) {
@@ -150,8 +151,10 @@ public class StudybuddyapiApplication {
 			for (int j = 0; j < users.length; j++) {
 				if (i != j) {
 					double randomMqp = Math.round(((Math.random() * 5.4) * 100.0 ) / 100.0);
-					Pair newPair = new Pair(users[i], users[j], randomMqp, false, false);
-					
+					Random rd = new Random();
+					// new User (currentUser, associatedUser, mqp, interested, blocked)
+					Pair newPair = new Pair(users[i], users[j], randomMqp, rd.nextBoolean(), false);
+//					Pair newPair = new Pair(users[i], users[j], randomMqp, true, false);
 					pairList.add(newPair);
 				}
 			}
@@ -161,14 +164,15 @@ public class StudybuddyapiApplication {
 		System.out.print("\nServer is running on localhost:8080\n");
 		programRepo.findAll().forEach(System.out::println);
 		institutionRepo.findAll().forEach(System.out::println);
-    hobbyRepo.findAll().forEach(System.out::println);
+		hobbyRepo.findAll().forEach(System.out::println);
 		userRepo.findAll().forEach(System.out::println);
 		pairRepo.findAll().forEach(System.out::println);
 	}
 
 	@Bean
 	ApplicationRunner initPrograms(ProgramRepository programRepo, IntitutionRepository institutionRepo, HobbyRepository hobbyRepo, UserRepository userRepo, PairRepository pairRepo) {
-		return args -> {			
+		return args -> {
+			// populate the API with data
 			loadTestData(programRepo, institutionRepo, hobbyRepo, userRepo, pairRepo);
 		};
 	}

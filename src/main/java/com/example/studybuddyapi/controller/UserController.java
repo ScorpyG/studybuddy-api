@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -26,21 +27,37 @@ public class UserController {
 	@Autowired
 	PairRepository pairRepo;
 	
+	
+	@GetMapping("/users/{id}")
+	public ResponseEntity<User> getUserById(@PathVariable("id") long id) {
+		Optional<User> userData = userRepo.findById(id);
+		
+		if (userData.isPresent()) {
+			return new ResponseEntity<>(userData.get(), HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		}
+	}
+	
 	@PutMapping("/users/{id}")
 	public ResponseEntity<User> updateUser(@PathVariable("id") Long id, @RequestBody User user) {
 		Optional<User> userData = userRepo.findById(id);
 		
-		if (userData.isPresent()) {
-			User updateUser = userData.get();
-			updateUser.setFirstName(user.getFirstName());
-			updateUser.setLastName(user.getLastName());
-			updateUser.setPhoneNumber(user.getPhoneNumber());
-			updateUser.setInstitution(user.getInstitution());
-			updateUser.setProgram(user.getProgram());
-			
-			return new ResponseEntity<>(userRepo.save(updateUser), HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND); 		
+		try {
+			if (userData.isPresent()) {
+				User updateUser = userData.get();
+				updateUser.setFirstName(user.getFirstName());
+				updateUser.setLastName(user.getLastName());
+				updateUser.setPhoneNumber(user.getPhoneNumber());
+				updateUser.setInstitution(user.getInstitution());
+				updateUser.setProgram(user.getProgram());
+				
+				return new ResponseEntity<>(userRepo.save(updateUser), HttpStatus.OK);
+			} else {
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND); 		
+			}
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 	

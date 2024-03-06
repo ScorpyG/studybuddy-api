@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.example.studybuddyapi.model.Institution;
 
-public interface IntitutionRepository extends JpaRepository <Institution, String>{
+public interface IntitutionRepository extends JpaRepository <Institution, Long>{
 	List<Institution> findByCountry(String country);
 	List<Institution> findByState(String state);
 	List<Institution> findByCity(String city);

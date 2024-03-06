@@ -100,7 +100,6 @@ public class PairController {
 				pairRepo.findAllMatchedPairs(id).forEach(studybuddies::add);
 				
 				for (Pair matchedPair : studybuddies) {
-					System.out.println(matchedPair.getInterestUser().getId());
 					matchedUsers.add(matchedPair.getInterestUser());
 				}
 				

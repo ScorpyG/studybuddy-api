@@ -42,7 +42,8 @@ public class HobbyController {
             if (category == null) {
                 hobbyRepo.findAll().forEach(hobbies::add);
             } else {
-                hobbyRepo.findByCategory(category).forEach(hobbies::add);
+            	// hobby.toLowerCase().contains(category.trim());
+                hobbyRepo.findByCategoryContainingIgnoreCase(category).forEach(hobbies::add);
             }
 
             if (hobbies.isEmpty()) {

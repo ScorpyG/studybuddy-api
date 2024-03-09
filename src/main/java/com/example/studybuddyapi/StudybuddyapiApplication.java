@@ -1,7 +1,9 @@
 package com.example.studybuddyapi;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
@@ -26,135 +28,117 @@ public class StudybuddyapiApplication {
 		SpringApplication.run(StudybuddyapiApplication.class, args);
 	}
 	
-	Program[] programs = {
-			new Program("CSCI","Computer Science"),
-			new Program("PSCI","Political Science"),
-			new Program("BUS","Business"),
-			new Program("ACCT","Accounting"),
-			new Program("ECON","Economics"),
-			new Program("ENGR","Engineering"),
-			new Program("NURS","Nursing"),
-			new Program("CHEM","Chemistry"),
-			new Program("BIO","Biology"),
-			new Program("PHYS","Physics"),
-			new Program("GEOG","Geography"),
-			new Program("MATH","Mathematics"),
-			new Program("ENGL","English"),
-			new Program("PHIL","Philosophy"),
-			new Program("HIST","History"),
-			new Program("PSYC","Psychology"),
-			new Program("LAWS","Laws"),
-			new Program("CRIM","Criminology")
-	};
-	
-	Institution[] institutions = {
-			new Institution("AJAE", "Douglas College", "700 Royal Ave", "New Westminster", "British Columbia","Canada"),
-			new Institution("AUAA", "University of British Columbia", "1874 East Mall", "Vancouver", "British Columbia","Canada"),
-			new Institution("AUAF", "University of Victoria", "3800 Finnerty Rd","Victoria", "British Columbia","Canada"),
-			new Institution("EUAX", "University of Waterloo", "200 University Ave W", "Waterloo", "Ontario", "Canada"),
-			new Institution("EUAV", "University of Toronto", "27 King's College Cir", "Toronto", "Ontario", "Canada"),
-	};
-	
-	Hobby[] hobbies = {
-			new Hobby("Basketball","Active Hobbies"),
-			new Hobby("Golf","Active Hobbies"),
-			new Hobby("Running","Active Hobbies"),
-			new Hobby("Volleyball","Active Hobbies"),
-			new Hobby("Yoga","Active Hobbies"),
-			new Hobby("Soccer","Active Hobbies"),
-			new Hobby("Cheerleading","Active Hobbies"),
-			new Hobby("Swimming","Active Hobbies"),
-			new Hobby("Football","Active Hobbies"),
-			new Hobby("Other","Active Hobbies"),
-			new Hobby("Painting","Creative Hobbies"),
-			new Hobby("Poetry writing","Creative Hobbies"),
-			new Hobby("Jewelry making","Creative Hobbies"),
-			new Hobby("Clay crafts","Creative Hobbies"),
-			new Hobby("Magic","Creative Hobbies"),
-			new Hobby("Pottery/Ceramics","Creative Hobbies"),
-			new Hobby("Makeup art","Creative Hobbies"),
-			new Hobby("Hair styling","Creative Hobbies"),
-			new Hobby("Photography","Creative Hobbies"),
-			new Hobby("Sewing","Creative Hobbies"),
-			new Hobby("Knitting","Creative Hobbies"),
-			new Hobby("Embroidery","Creative Hobbies"),
-			new Hobby("Crochet","Creative Hobbies"),
-			new Hobby("Acting","Creative Hobbies"),
-			new Hobby("Gardening","Creative Hobbies"),
-			new Hobby("Design","Creative Hobbies"),
-			new Hobby("Other","Creative Hobbies"),
-			new Hobby("Singing","Musical Hobbies"),
-			new Hobby("Dancing","Musical Hobbies"),
-			new Hobby("Listening to music","Musical Hobbies"),
-			new Hobby("Playing instruments","Musical Hobbies"),
-			new Hobby("Other","Musical Hobbies"),
-			new Hobby("Reading","Mental Hobbies"),
-			new Hobby("Journaling","Mental Hobbies"),
-			new Hobby("Writing","Mental Hobbies"),
-			new Hobby("Crossword puzzles","Mental Hobbies"),
-			new Hobby("Sudoku","Mental Hobbies"),
-			new Hobby("Word scrambles","Mental Hobbies"),
-			new Hobby("Other","Mental Hobbies"),
-			new Hobby("Pilates","Active Hobbies"),
-			new Hobby("Ice skating","Active Hobbies"),
-			new Hobby("Stretching","Active Hobbies"),
-			new Hobby("Hiking","Active Hobbies"),
-			new Hobby("Fishing","Active Hobbies"),
-			new Hobby("Skiing","Active Hobbies"),
-			new Hobby("Weight lifting","Active Hobbies"),
-			new Hobby("Kickboxing","Active Hobbies"),
-			new Hobby("Boxing","Active Hobbies"),
-			new Hobby("Board games","Active Hobbies")
-	};
-	
-	// TODO: update User class to incorporate hobby
-	User[] users = {
-			new User("testinguser1@test.com", "123456", "user 1", "testing", "111-111-1111", programs[0], institutions[0]), // 0
-			new User("testinguser2@test.com", "123456", "user 2", "testing", "111-111-2222", programs[2], institutions[2]), // 1
-			new User("testinguser3@test.com", "123456", "user 3", "testing", "111-111-3333", programs[0], institutions[3]), // 2
-			new User("testinguser4@test.com", "123456", "user 4", "testing", "111-111-4444", programs[1], institutions[1]), // 3
-	};
+	// duplicate the method
+	public double calculateMatchQualityScore(User mainUser, User interestUser) {
+		double score = 0;
+		
+		String mainUserPrg = mainUser.getProgram().getCode();
+		String interestUserPrg = interestUser.getProgram().getCode();
+		
+		String mainUserInstitution = mainUser.getInstitution().getInstitutionCode();
+		String interestUserInstitution = interestUser.getInstitution().getInstitutionCode();
+		Set<Hobby> userHobbies = mainUser.getHobbies();
+		Set<Hobby> interestUserHobbies = interestUser.getHobbies();		
+		
+		// check for program of both users match add 3 points to the score
+		if (mainUserPrg.equals(interestUserPrg)) {
+			score += 3;
+		}
+		
+		// check for institution of both users match add 2 points to the score
+		if (mainUserInstitution.equals(interestUserInstitution)) {
+			score += 2;
+		}
+		
+		// by removing the differences between 2 sets of hobbies
+		userHobbies.retainAll(interestUserHobbies);
+		score += (userHobbies.size() * 0.1);
+		
+		return score;
+	}
 	
 	private void loadTestData(ProgramRepository programRepo, IntitutionRepository institutionRepo, HobbyRepository hobbyRepo, UserRepository userRepo, PairRepository pairRepo) {
+		// Create programs records
 		ArrayList<Program> programList = new ArrayList<>();
-		ArrayList<Institution> institutionList = new ArrayList<>();
-		ArrayList<Hobby> hobbyList = new ArrayList<>();
-		ArrayList<User> userList = new ArrayList<>();
-		ArrayList<Pair> pairList = new ArrayList<>();
-		
-		// Create programs
-		for (int i = 0; i < programs.length; i++) {
-			programList.add(programs[i]);
-		}
+		programList.add(new Program("CSCI","Computer Science")); 	// 0
+		programList.add(new Program("PSCI","Political Science")); 	// 1
+		programList.add(new Program("BUS","Business")); 			// 2
+		programList.add(new Program("ACCT","Accounting")); 			// 3
+		programList.add(new Program("ECON","Economics")); 			// 4
+		programList.add(new Program("ENGR","Engineering")); 		// 5
+		programList.add(new Program("NURS","Nursing"));	 			// 6
+		programList.add(new Program("CHEM","Chemistry")); 			// 7
+		programList.add(new Program("BIO","Biology")); 				// 8
+		programList.add(new Program("PHYS","Physics")); 			// 9
+		programList.add(new Program("GEOG","Geography")); 			// 10
+		programList.add(new Program("MATH","Mathematics")); 		// 11
+		programList.add(new Program("ENGL","English")); 			// 12
+		programList.add(new Program("PHIL","Philosophy")); 			// 13
+		programList.add(new Program("HIST","History")); 			// 14
+		programList.add(new Program("PSYC","Psychology")); 			// 15
+		programList.add(new Program("LAWS","Laws")); 				// 16
+		programList.add(new Program("CRIM","Criminology")); 		// 17
 		programRepo.saveAll(programList);
 		
-		// Create institutions
-		for (int i = 0; i < institutions.length; i++) {
-			institutionList.add(institutions[i]);
-		}
+		// Create institutions records
+		ArrayList<Institution> institutionList = new ArrayList<>();
+		institutionList.add(new Institution("AJAE", "Douglas College", "700 Royal Ave", "New Westminster", "British Columbia","Canada")); 			// 0
+		institutionList.add(new Institution("AUAA", "University of British Columbia", "1874 East Mall", "Vancouver", "British Columbia","Canada")); // 1
+		institutionList.add(new Institution("AUAF", "University of Victoria", "3800 Finnerty Rd","Victoria", "British Columbia","Canada")); 		// 2
+		institutionList.add(new Institution("EUAX", "University of Waterloo", "200 University Ave W", "Waterloo", "Ontario", "Canada")); 			// 3
+		institutionList.add(new Institution("EUAV", "University of Toronto", "27 King's College Cir", "Toronto", "Ontario", "Canada")); 			// 4
 		institutionRepo.saveAll(institutionList);
-    
-	    // Create hobbies
-	    for (int i = 0; i < hobbies.length; i++) {
-	      hobbyList.add(hobbies[i]);
-	    }
-	    hobbyRepo.saveAll(hobbyList);
 		
-		// Create users
-		for (int i = 0; i < users.length; i++) {
-			userList.add(users[i]);
-		}
+	    // Create hobbies records
+		ArrayList<Hobby> hobbyList = new ArrayList<>();
+		hobbyList.add(new Hobby("Basketball", "Active Hobbies")); 		// 0
+		hobbyList.add(new Hobby("Swimming", "Active Hobbies")); 		// 1
+		hobbyList.add(new Hobby("Poetry writing", "Creative Hobbies")); // 2
+		hobbyList.add(new Hobby("Singing", "Musical Hobbies")); 		// 3
+		hobbyList.add(new Hobby("Chess", "Mental Hobbies")); 			// 4
+		hobbyList.add(new Hobby("Sudoku", "Mental Hobbies")); 			// 5
+		hobbyList.add(new Hobby("Reading", "Mental Hobbies")); 			// 6
+		hobbyList.add(new Hobby("Gardening", "Creative Hobbies")); 		// 7
+		hobbyList.add(new Hobby("Journaling", "Mental Hobbies")); 		// 8
+		hobbyList.add(new Hobby("Knitting", "Creative Hobbies")); 		// 9
+	    hobbyRepo.saveAll(hobbyList);
+
+	    Set<Hobby> user1Hobbies = new HashSet<>();
+	    user1Hobbies.add(hobbyList.get(0));
+	    user1Hobbies.add(hobbyList.get(1));
+	    user1Hobbies.add(hobbyList.get(2));
+	    
+	    Set<Hobby> user2Hobbies = new HashSet<>();
+	    user2Hobbies.add(hobbyList.get(0));
+	    user2Hobbies.add(hobbyList.get(1));
+	    user2Hobbies.add(hobbyList.get(2));
+	    
+	    Set<Hobby> user3Hobbies = new HashSet<>();
+	    user3Hobbies.add(hobbyList.get(1));
+	    user3Hobbies.add(hobbyList.get(5));
+	    user3Hobbies.add(hobbyList.get(9));
+	    
+	    Set<Hobby> user4Hobbies = new HashSet<>();
+	    user4Hobbies.add(hobbyList.get(2));
+	    user4Hobbies.add(hobbyList.get(3));
+	    user4Hobbies.add(hobbyList.get(4));
+	    
+		// Create users record
+		ArrayList<User> userList = new ArrayList<>();
+		userList.add(new User("testinguser1@test.com", "123456", "user 1", "testing", "111-111-1111", programList.get(0), institutionList.get(0), user1Hobbies));
+		userList.add(new User("testinguser2@test.com", "123456", "user 2", "testing", "111-111-2222", programList.get(1), institutionList.get(0), user2Hobbies));
+		userList.add(new User("testinguser3@test.com", "123456", "user 3", "testing", "111-111-3333", programList.get(2), institutionList.get(1), user3Hobbies));
+		userList.add(new User("testinguser4@test.com", "123456", "user 4", "testing", "111-111-4444", programList.get(3), institutionList.get(4), user4Hobbies));
 		userRepo.saveAll(userList);
 		
 		// Create pairs
-		for (int i = 0; i < users.length; i++) {
-			for (int j = 0; j < users.length; j++) {
+		ArrayList<Pair> pairList = new ArrayList<>();
+		for (int i = 0; i < userList.size(); i++) {
+			for (int j = 0; j < userList.size(); j++) {
 				if (i != j) {
-					double randomMqp = Math.round(((Math.random() * 5.4) * 100.0 ) / 100.0);
+					double calculatedMqp = calculateMatchQualityScore(userList.get(i), userList.get(j));
 					Random rd = new Random();
-					// new User (currentUser, associatedUser, mqp, interested, blocked)
-					Pair newPair = new Pair(users[i], users[j], randomMqp, rd.nextBoolean(), false);
-//					Pair newPair = new Pair(users[i], users[j], randomMqp, true, false);
+					Pair newPair = new Pair(userList.get(i), userList.get(j), calculatedMqp, rd.nextBoolean(), false);
 					pairList.add(newPair);
 				}
 			}

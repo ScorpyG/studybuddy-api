@@ -13,6 +13,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -42,13 +44,18 @@ public class User {
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "code")
-	@JsonIgnore
 	private Program program;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "institution_id")
-	@JsonIgnore
 	private Institution institution;
+
+	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+	@JoinTable(name = "user_hobby_mapping", 
+		joinColumns = { @JoinColumn(name = "user_id")},
+		inverseJoinColumns = { @JoinColumn(name = "hobby_id")}
+	)
+	private Set<Hobby> hobbies = new HashSet<Hobby>();
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JsonIgnore
@@ -56,7 +63,7 @@ public class User {
 	
 	// Constructor
 	public User() {}
-	public User(String email, String password, String firstName, String lastName, String phoneNumber, Program program, Institution institution) {
+	public User(String email, String password, String firstName, String lastName, String phoneNumber, Program program, Institution institution, Set<Hobby> hobbies) {
 		this.email = email;
 		this.password = password;
 		this.firstName = firstName;
@@ -64,6 +71,7 @@ public class User {
 		this.phoneNumber = phoneNumber;
 		this.program = program;
 		this.institution = institution;
+		this.hobbies = hobbies;
 	}
 	
 	// Getters
@@ -91,6 +99,9 @@ public class User {
 	public Institution getInstitution() {
 		return institution;
 	}
+	public Set<Hobby> getHobbies() {
+		return hobbies;
+	}
 	public Set<Pair> getPairs() {
 		return pairs;
 	}
@@ -117,6 +128,15 @@ public class User {
 	public void setInstitution(Institution institution) {
 		this.institution = institution;
 	}
+	public void addHobbies(Hobby hobby) {
+		this.hobbies.add(hobby);
+		hobby.getUser().add(this);
+	}
+	public void removeHobby(Hobby hobby) {
+		this.hobbies.remove(hobby);
+		hobby.getUser().remove(this);
+	}
+	
 	public void setPairs(Set<Pair> pairs) {
 		this.pairs = pairs;
 	}

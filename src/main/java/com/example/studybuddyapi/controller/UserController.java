@@ -1,6 +1,7 @@
 package com.example.studybuddyapi.controller;
 
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.studybuddyapi.model.Hobby;
 import com.example.studybuddyapi.model.Pair;
 import com.example.studybuddyapi.model.User;
 import com.example.studybuddyapi.repositories.PairRepository;
@@ -72,7 +74,8 @@ public class UserController {
 					user.getLastName(),
 					user.getPhoneNumber(),
 					user.getProgram(),
-					user.getInstitution())
+					user.getInstitution(),
+					user.getHobbies())
 			);
 			
 			// adding pairs for the new user into the pairs table
@@ -97,8 +100,7 @@ public class UserController {
 	}
 	
 	// Calculate the MQP
-	// TODO: separate into a class
-	private double calculateMatchQualityScore(User mainUser, User interestUser) {
+	public double calculateMatchQualityScore(User mainUser, User interestUser) {
 		double score = 0;
 		
 		String mainUserPrg = mainUser.getProgram().getCode();
@@ -106,7 +108,8 @@ public class UserController {
 		
 		String mainUserInstitution = mainUser.getInstitution().getInstitutionCode();
 		String interestUserInstitution = interestUser.getInstitution().getInstitutionCode();
-		
+		Set<Hobby> userHobbies = mainUser.getHobbies();
+		Set<Hobby> interestUserHobbies = interestUser.getHobbies();		
 		
 		// check for program of both users match add 3 points to the score
 		if (mainUserPrg.equals(interestUserPrg)) {
@@ -118,7 +121,9 @@ public class UserController {
 			score += 2;
 		}
 		
-		// TODO: check for matching hobbies
+		// by removing the differences between 2 sets of hobbies
+		userHobbies.retainAll(interestUserHobbies);
+		score += (userHobbies.size() * 0.1);
 		
 		return score;
 	}

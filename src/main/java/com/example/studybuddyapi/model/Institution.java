@@ -16,7 +16,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table (name = "institution")
+@Table (name = "institutions")
 public class Institution {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -40,7 +40,7 @@ public class Institution {
 	@Column (name = "country")
 	private String country;
 	
-	@OneToMany(mappedBy="institution", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "institution", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JsonIgnore
 	private Set<User> users = new HashSet<>();
 	

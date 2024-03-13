@@ -1,11 +1,14 @@
 package com.example.studybuddyapi.controller;
 
+import java.util.ArrayList;
 import java.util.Optional;
+import java.util.Random;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +23,7 @@ import com.example.studybuddyapi.model.User;
 import com.example.studybuddyapi.repositories.PairRepository;
 import com.example.studybuddyapi.repositories.UserRepository;
 
+@CrossOrigin(origins = "http://localhost:5173/")
 @RestController
 @RequestMapping("/api")
 public class UserController {
@@ -28,7 +32,6 @@ public class UserController {
 	
 	@Autowired
 	PairRepository pairRepo;
-	
 	
 	@GetMapping("/users/{id}")
 	public ResponseEntity<User> getUserById(@PathVariable("id") long id) {
@@ -78,20 +81,8 @@ public class UserController {
 					user.getHobbies())
 			);
 			
-			// adding pairs for the new user into the pairs table
-			Long test = newUser.getId();
-		
-			// iterate through each record in the users table
-			for (long i = 1; i < test ; i++) {
-				Optional<User> potentialPairUser = userRepo.findById(i);
-				
-				if (potentialPairUser.isPresent()) {
-					User pairUser = potentialPairUser.get();
-					double mqp = calculateMatchQualityScore(newUser, pairUser);
-							
-					pairRepo.save(new Pair(newUser, pairUser, mqp, false, false));
-				}
-			}
+			// update the ENTIRE pair table every time new user sign up
+			updateAllPairs();
 			
 			return new ResponseEntity<>(newUser, HttpStatus.CREATED);
 		} catch (Exception e) {
@@ -126,5 +117,26 @@ public class UserController {
 		score += (userHobbies.size() * 0.1);
 		
 		return score;
+	}
+	
+	// TODO: this required heavy optimization 
+	public void updateAllPairs() {
+		ArrayList<User> userList = new ArrayList<User>();
+		ArrayList<Pair> pairList = new ArrayList<Pair>();
+		
+		userRepo.findAll().forEach(userList::add);
+		
+		// iterate through each record in the users table 
+		for (int i = 0; i < userList.size(); i++) {
+			for (int j = 0; j < userList.size(); j++) {
+				if (i != j) {
+					double calculatedMqp = calculateMatchQualityScore(userList.get(i), userList.get(j));
+					// By default both blocked and interested is false since no action been perform.
+					Pair newPair = new Pair(userList.get(i), userList.get(j), calculatedMqp, false, false);
+					pairList.add(newPair);
+				}
+			}
+		}
+		pairRepo.saveAll(pairList);
 	}
 }

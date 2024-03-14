@@ -2,8 +2,6 @@ package com.example.studybuddyapi.controller;
 
 import java.util.ArrayList;
 import java.util.Optional;
-import java.util.Random;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.studybuddyapi.model.Hobby;
 import com.example.studybuddyapi.model.Pair;
 import com.example.studybuddyapi.model.User;
 import com.example.studybuddyapi.repositories.PairRepository;
@@ -67,26 +64,20 @@ public class UserController {
 	}
 	
 	@PostMapping("/users")
-	public ResponseEntity<User> createUser(@RequestBody User user) {
+	public ResponseEntity<User> createUser(@RequestBody User userInfo) {
 		try {
 			// Adding new user to the users table
-			User newUser = userRepo.save(new User(
-					user.getEmail(),
-					user.getPassword(),
-					user.getFirstName(),
-					user.getLastName(),
-					user.getPhoneNumber(),
-					user.getProgram(),
-					user.getInstitution(),
-					user.getHobbies())
-			);
+			User newUser = userRepo.save(new User(userInfo.getEmail(), userInfo.getPassword(), userInfo.getFirstName(), 
+					userInfo.getLastName(), userInfo.getPhoneNumber(), userInfo.getProgram(), userInfo.getInstitution(),
+					userInfo.getHobbies()));
 			
 			// update the ENTIRE pair table every time new user sign up
 			updateAllPairs();
 			
 			return new ResponseEntity<>(newUser, HttpStatus.CREATED);
 		} catch (Exception e) {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			e.printStackTrace();
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 	
@@ -99,8 +90,8 @@ public class UserController {
 		
 		String mainUserInstitution = mainUser.getInstitution().getInstitutionCode();
 		String interestUserInstitution = interestUser.getInstitution().getInstitutionCode();
-		Set<Hobby> userHobbies = mainUser.getHobbies();
-		Set<Hobby> interestUserHobbies = interestUser.getHobbies();		
+		String[] userHobbies = mainUser.getHobbies();
+		String[] interestUserHobbies = interestUser.getHobbies();		
 		
 		// check for program of both users match add 3 points to the score
 		if (mainUserPrg.equals(interestUserPrg)) {
@@ -112,9 +103,14 @@ public class UserController {
 			score += 2;
 		}
 		
-		// by removing the differences between 2 sets of hobbies
-		userHobbies.retainAll(interestUserHobbies);
-		score += (userHobbies.size() * 0.1);
+		
+		for (int i = 0; i < userHobbies.length; i++) {
+			for (int j = 0; j < interestUserHobbies.length; j++) {
+				if (userHobbies[i].replaceAll("\\s", "").equalsIgnoreCase(interestUserHobbies[j])) {
+					score += 0.1;
+				}
+			}
+		}
 		
 		return score;
 	}
@@ -126,9 +122,21 @@ public class UserController {
 		
 		userRepo.findAll().forEach(userList::add);
 		
-		// iterate through each record in the users table 
+		int userNum = userList.size() - 1;
+		
+		// iterate through the current user list
 		for (int i = 0; i < userList.size(); i++) {
-			for (int j = 0; j < userList.size(); j++) {
+			int k;
+			
+			// current user isn't the last user (exclude the newest user)
+			if (i != userNum) {
+				k = userNum; // pointer refer to the newest user
+			} else {
+				k = 0;
+			}
+			
+			// iterate through the list and create all new pair associated with the new user while maintain the old records
+			for (int j = k; j < userList.size(); j++) {
 				if (i != j) {
 					double calculatedMqp = calculateMatchQualityScore(userList.get(i), userList.get(j));
 					// By default both blocked and interested is false since no action been perform.

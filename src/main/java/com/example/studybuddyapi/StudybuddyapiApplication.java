@@ -1,21 +1,17 @@
 package com.example.studybuddyapi;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Random;
-import java.util.Set;
 
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-import com.example.studybuddyapi.model.Hobby;
 import com.example.studybuddyapi.model.Institution;
 import com.example.studybuddyapi.model.Pair;
 import com.example.studybuddyapi.model.Program;
 import com.example.studybuddyapi.model.User;
-import com.example.studybuddyapi.repositories.HobbyRepository;
 import com.example.studybuddyapi.repositories.IntitutionRepository;
 import com.example.studybuddyapi.repositories.PairRepository;
 import com.example.studybuddyapi.repositories.ProgramRepository;
@@ -37,8 +33,8 @@ public class StudybuddyapiApplication {
 		
 		String mainUserInstitution = mainUser.getInstitution().getInstitutionCode();
 		String interestUserInstitution = interestUser.getInstitution().getInstitutionCode();
-		Set<Hobby> userHobbies = mainUser.getHobbies();
-		Set<Hobby> interestUserHobbies = interestUser.getHobbies();		
+		String[] userHobbies = mainUser.getHobbies();
+		String[] interestUserHobbies = interestUser.getHobbies();		
 		
 		// check for program of both users match add 3 points to the score
 		if (mainUserPrg.equals(interestUserPrg)) {
@@ -50,14 +46,18 @@ public class StudybuddyapiApplication {
 			score += 2;
 		}
 		
-		// by removing the differences between 2 sets of hobbies
-		userHobbies.retainAll(interestUserHobbies);
-		score += (userHobbies.size() * 0.1);
+		for (int i = 0; i < userHobbies.length; i++) {
+			for (int j = 0; j < interestUserHobbies.length; j++) {
+				if (userHobbies[i].replaceAll("\\s", "").equalsIgnoreCase(interestUserHobbies[j])) {
+					score += 0.1;
+				}
+			}
+		}
 		
 		return score;
 	}
 	
-	private void loadTestData(ProgramRepository programRepo, IntitutionRepository institutionRepo, HobbyRepository hobbyRepo, UserRepository userRepo, PairRepository pairRepo) {
+	private void loadTestData(ProgramRepository programRepo, IntitutionRepository institutionRepo, UserRepository userRepo, PairRepository pairRepo) {
 		// Create programs records
 		ArrayList<Program> programList = new ArrayList<>();
 		programList.add(new Program("CSCI","Computer Science")); 	// 0
@@ -89,39 +89,10 @@ public class StudybuddyapiApplication {
 		institutionList.add(new Institution("EUAV", "University of Toronto", "27 King's College Cir", "Toronto", "Ontario", "Canada")); 			// 4
 		institutionRepo.saveAll(institutionList);
 		
-	    // Create hobbies records
-		ArrayList<Hobby> hobbyList = new ArrayList<>();
-		hobbyList.add(new Hobby("Basketball", "Active Hobbies")); 		// 0
-		hobbyList.add(new Hobby("Swimming", "Active Hobbies")); 		// 1
-		hobbyList.add(new Hobby("Poetry writing", "Creative Hobbies")); // 2
-		hobbyList.add(new Hobby("Singing", "Musical Hobbies")); 		// 3
-		hobbyList.add(new Hobby("Chess", "Mental Hobbies")); 			// 4
-		hobbyList.add(new Hobby("Sudoku", "Mental Hobbies")); 			// 5
-		hobbyList.add(new Hobby("Reading", "Mental Hobbies")); 			// 6
-		hobbyList.add(new Hobby("Gardening", "Creative Hobbies")); 		// 7
-		hobbyList.add(new Hobby("Journaling", "Mental Hobbies")); 		// 8
-		hobbyList.add(new Hobby("Knitting", "Creative Hobbies")); 		// 9
-	    hobbyRepo.saveAll(hobbyList);
-
-	    Set<Hobby> user1Hobbies = new HashSet<>();
-	    user1Hobbies.add(hobbyList.get(0));
-	    user1Hobbies.add(hobbyList.get(1));
-	    user1Hobbies.add(hobbyList.get(2));
-	    
-	    Set<Hobby> user2Hobbies = new HashSet<>();
-	    user2Hobbies.add(hobbyList.get(0));
-	    user2Hobbies.add(hobbyList.get(1));
-	    user2Hobbies.add(hobbyList.get(2));
-	    
-	    Set<Hobby> user3Hobbies = new HashSet<>();
-	    user3Hobbies.add(hobbyList.get(1));
-	    user3Hobbies.add(hobbyList.get(5));
-	    user3Hobbies.add(hobbyList.get(9));
-	    
-	    Set<Hobby> user4Hobbies = new HashSet<>();
-	    user4Hobbies.add(hobbyList.get(2));
-	    user4Hobbies.add(hobbyList.get(3));
-	    user4Hobbies.add(hobbyList.get(4));
+	    String[] user1Hobbies = new String[] {"Chess", "Sudoku", "Journaling"};
+	    String[] user2Hobbies = new String[] {"Singing", "Swimming", "Chess"};
+	    String[] user3Hobbies = new String[] {"Basketball", "Knitting", "Poetry Writing"};
+	    String[] user4Hobbies = new String[] {"Reading", "Journaling", "Gardening"};
 	    
 		// Create users record
 		ArrayList<User> userList = new ArrayList<>();
@@ -148,16 +119,15 @@ public class StudybuddyapiApplication {
 		System.out.print("\nServer is running on localhost:8080\n");
 		programRepo.findAll().forEach(System.out::println);
 		institutionRepo.findAll().forEach(System.out::println);
-		hobbyRepo.findAll().forEach(System.out::println);
 		userRepo.findAll().forEach(System.out::println);
 		pairRepo.findAll().forEach(System.out::println);
 	}
 
 	@Bean
-	ApplicationRunner initPrograms(ProgramRepository programRepo, IntitutionRepository institutionRepo, HobbyRepository hobbyRepo, UserRepository userRepo, PairRepository pairRepo) {
+	ApplicationRunner initPrograms(ProgramRepository programRepo, IntitutionRepository institutionRepo, UserRepository userRepo, PairRepository pairRepo) {
 		return args -> {
 			// populate the API with data
-			loadTestData(programRepo, institutionRepo, hobbyRepo, userRepo, pairRepo);
+			loadTestData(programRepo, institutionRepo, userRepo, pairRepo);
 		};
 	}
 }

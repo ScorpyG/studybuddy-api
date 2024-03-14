@@ -13,8 +13,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -30,7 +28,7 @@ public class User {
 	@Column(name = "email", unique = true, nullable = false)
 	private String email;
 	
-	@Column(name = "password", nullable = false)
+	@Column(name = "password")
 	@JsonIgnore
 	private String password;
 	
@@ -40,23 +38,19 @@ public class User {
 	@Column(name = "lastName")
 	private String lastName;
 	
-	@Column(name = "phone_number")
+	@Column(name = "phoneNumber")
 	private String phoneNumber;
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "code")
+	@JoinColumn(name = "program_id")
 	private Program program;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "institution_id")
 	private Institution institution;
 
-	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-	@JoinTable(name = "user_hobby_mapping", 
-		joinColumns = { @JoinColumn(name = "user_id")},
-		inverseJoinColumns = { @JoinColumn(name = "hobby_id")}
-	)
-	private Set<Hobby> hobbies = new HashSet<Hobby>();
+	@Column(name = "hobbies")
+	private String[] hobbies;
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JsonIgnore
@@ -64,7 +58,9 @@ public class User {
 	
 	// Constructor
 	public User() {}
-	public User(String email, String password, String firstName, String lastName, String phoneNumber, Program program, Institution institution, Set<Hobby> hobbies) {
+	public User(String email, String password, String firstName, String lastName, 
+			String phoneNumber, Program program, Institution institution, String[] hobbies
+	) {
 		this.email = email;
 		this.password = password;
 		this.firstName = firstName;
@@ -100,7 +96,7 @@ public class User {
 	public Institution getInstitution() {
 		return institution;
 	}
-	public Set<Hobby> getHobbies() {
+	public String[] getHobbies() {
 		return hobbies;
 	}
 	public Set<Pair> getPairs() {
@@ -129,13 +125,8 @@ public class User {
 	public void setInstitution(Institution institution) {
 		this.institution = institution;
 	}
-	public void addHobbies(Hobby hobby) {
-		this.hobbies.add(hobby);
-		hobby.getUser().add(this);
-	}
-	public void removeHobby(Hobby hobby) {
-		this.hobbies.remove(hobby);
-		hobby.getUser().remove(this);
+	public void setHobbies(String[] hobbies) {
+		this.hobbies = hobbies;
 	}
 	
 	public void setPairs(Set<Pair> pairs) {

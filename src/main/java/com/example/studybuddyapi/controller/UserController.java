@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.studyapi.request.UserUpdateRequest;
 import com.example.studybuddyapi.model.Pair;
 import com.example.studybuddyapi.model.User;
 import com.example.studybuddyapi.repositories.PairRepository;
@@ -42,23 +43,31 @@ public class UserController {
 	}
 	
 	@PutMapping("/users/{id}")
-	public ResponseEntity<User> updateUser(@PathVariable("id") Long id, @RequestBody User user) {
+	public ResponseEntity<User> updateUser(@PathVariable("id") Long id, @RequestBody UserUpdateRequest user) {
 		Optional<User> userData = userRepo.findById(id);
 		
 		try {
 			if (userData.isPresent()) {
 				User updateUser = userData.get();
-				updateUser.setFirstName(user.getFirstName());
-				updateUser.setLastName(user.getLastName());
-				updateUser.setPhoneNumber(user.getPhoneNumber());
-				updateUser.setInstitution(user.getInstitution());
-				updateUser.setProgram(user.getProgram());
+				updateUser.setFirstName(user.getUserFirstName());
+				updateUser.setLastName(user.getUserLastName());
+				updateUser.setPhoneNumber(user.getUserPhoneNumber());
+				updateUser.setInstitution(user.getUserInstitution());
+				updateUser.setProgram(user.getUserProgram());
+				updateUser.setHobbies(user.getUserHobbies());
 				
-				return new ResponseEntity<>(userRepo.save(updateUser), HttpStatus.OK);
+				// DO NOT change the order of this line this needs to happen in order
+				userRepo.save(updateUser);
+			
+				// update the ENTIRE pair table when user update their preferences
+				updateAllPairs();
+				
+				return new ResponseEntity<>(updateUser, HttpStatus.OK);
 			} else {
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND); 		
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}

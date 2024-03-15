@@ -100,6 +100,10 @@ public class StudybuddyapiApplication {
 		userList.add(new User("testinguser2@test.com", "123456", "user 2", "testing", "111-111-2222", programList.get(1), institutionList.get(0), user2Hobbies));
 		userList.add(new User("testinguser3@test.com", "123456", "user 3", "testing", "111-111-3333", programList.get(2), institutionList.get(1), user3Hobbies));
 		userList.add(new User("testinguser4@test.com", "123456", "user 4", "testing", "111-111-4444", programList.get(3), institutionList.get(4), user4Hobbies));
+		userList.add(new User("testinguser5@test.com", "randomTest@123", "user 5", "tester", "111-222-5555", programList.get(1), institutionList.get(2), user3Hobbies));
+		userList.add(new User("testinguser6@test.com", "randomTest@666", "user 6", "tester", "999-222-6666", programList.get(10), institutionList.get(4), user2Hobbies));
+		userList.add(new User("testinguser7@test.com", "randomTest@123", "user 7", "tester", "111-222-7777", programList.get(4), institutionList.get(1), user1Hobbies));
+		userList.add(new User("testinguser8@test.com", "randomTest@123", "user 8", "tester", "111-222-8888", programList.get(6), institutionList.get(0), user4Hobbies));
 		userRepo.saveAll(userList);
 		
 		// Create pairs

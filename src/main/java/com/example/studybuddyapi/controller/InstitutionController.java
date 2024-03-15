@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.studybuddyapi.model.Institution;
 import com.example.studybuddyapi.repositories.IntitutionRepository;
 
-@CrossOrigin(origins = "http://localhost:5173/")
+@CrossOrigin(origins = { "http://localhost:5173/", "http://localhost:8081" })
 @RestController
 @RequestMapping("/api")
 public class InstitutionController {

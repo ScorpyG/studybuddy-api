@@ -20,7 +20,7 @@ import com.example.studybuddyapi.model.User;
 import com.example.studybuddyapi.repositories.PairRepository;
 import com.example.studybuddyapi.repositories.UserRepository;
 
-@CrossOrigin(origins = "http://localhost:5173/")
+@CrossOrigin(origins = { "http://localhost:5173/", "http://localhost:8081" })
 @RestController
 @RequestMapping("/api")
 public class UserController {

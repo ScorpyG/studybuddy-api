@@ -28,7 +28,7 @@ public class User {
 	@Column(name = "email", unique = true, nullable = false)
 	private String email;
 	
-	@Column(name = "password", nullable = false)
+	@Column(name = "password")
 	private String password;
 	
 	@Column(name = "firstName")
@@ -37,18 +37,19 @@ public class User {
 	@Column(name = "lastName")
 	private String lastName;
 	
-	@Column(name = "phone_number")
+	@Column(name = "phoneNumber")
 	private String phoneNumber;
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "code")
-	@JsonIgnore
+	@JoinColumn(name = "program_id")
 	private Program program;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "institution_id")
-	@JsonIgnore
 	private Institution institution;
+
+	@Column(name = "hobbies")
+	private String[] hobbies;
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JsonIgnore
@@ -56,7 +57,9 @@ public class User {
 	
 	// Constructor
 	public User() {}
-	public User(String email, String password, String firstName, String lastName, String phoneNumber, Program program, Institution institution) {
+	public User(String email, String password, String firstName, String lastName, 
+			String phoneNumber, Program program, Institution institution, String[] hobbies
+	) {
 		this.email = email;
 		this.password = password;
 		this.firstName = firstName;
@@ -64,6 +67,7 @@ public class User {
 		this.phoneNumber = phoneNumber;
 		this.program = program;
 		this.institution = institution;
+		this.hobbies = hobbies;
 	}
 	
 	// Getters
@@ -91,6 +95,9 @@ public class User {
 	public Institution getInstitution() {
 		return institution;
 	}
+	public String[] getHobbies() {
+		return hobbies;
+	}
 	public Set<Pair> getPairs() {
 		return pairs;
 	}
@@ -117,6 +124,10 @@ public class User {
 	public void setInstitution(Institution institution) {
 		this.institution = institution;
 	}
+	public void setHobbies(String[] hobbies) {
+		this.hobbies = hobbies;
+	}
+	
 	public void setPairs(Set<Pair> pairs) {
 		this.pairs = pairs;
 	}

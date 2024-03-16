@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -19,6 +20,7 @@ import com.example.studybuddyapi.model.User;
 import com.example.studybuddyapi.repositories.PairRepository;
 import com.example.studybuddyapi.repositories.UserRepository;
 
+@CrossOrigin(origins = { "http://localhost:5173/", "http://localhost:8081" })
 @RestController
 @RequestMapping("/api")
 public class PairController {
@@ -85,6 +87,7 @@ public class PairController {
 				return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -110,6 +113,7 @@ public class PairController {
 			}
 			
 		} catch (Exception e) {
+			e.printStackTrace();
 			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}

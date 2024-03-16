@@ -171,7 +171,7 @@ public class UserController {
 					User currentInterestUser = currentPair.getInterestUser();
 					double newMqp = calculateMatchQualityScore(currentUser, currentInterestUser);
 	
-					pairRepo.updatePairContainingUserId(currentPair.getPairId(), newMqp);	
+					pairRepo.updatePairsMqpContainingUserId(currentPair.getPairId(), newMqp);	
 				}
 			}			
 		} catch (Exception e) {

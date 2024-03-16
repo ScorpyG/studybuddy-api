@@ -3,10 +3,13 @@ package com.example.studybuddyapi.repositories;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.studybuddyapi.model.Pair;
 
+@Transactional
 public interface PairRepository extends JpaRepository<Pair, Integer> {
 	List<Pair> findByUserId(long id);
 
@@ -19,4 +22,15 @@ public interface PairRepository extends JpaRepository<Pair, Integer> {
 			+ "AND p2.interested = true ",
 			nativeQuery = true)
 	List<Pair> findAllMatchedPairs(long userId);
+	
+	
+	@Query(value = "SELECT * FROM Pairs "
+			+ "WHERE user_id = :userId "
+			+ "OR interest_user_id = :userId", 
+			nativeQuery = true)
+	List<Pair> findAllPairsContainingUserById(long userId);
+	
+	@Modifying(clearAutomatically = true)
+	@Query(value = "UPDATE Pairs SET mqp = :newMqp WHERE pair_id = :pairId", nativeQuery = true)
+	void updatePairContainingUserId(int pairId, double newMqp);
 }

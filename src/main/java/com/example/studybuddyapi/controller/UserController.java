@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.studyapi.request.UserUpdateRequest;
 import com.example.studybuddyapi.model.Pair;
 import com.example.studybuddyapi.model.User;
 import com.example.studybuddyapi.repositories.PairRepository;
@@ -43,24 +42,25 @@ public class UserController {
 	}
 	
 	@PutMapping("/users/{id}")
-	public ResponseEntity<User> updateUser(@PathVariable("id") Long id, @RequestBody UserUpdateRequest user) {
-		Optional<User> userData = userRepo.findById(id);
-		
+	public ResponseEntity<User> updateUser(@PathVariable("id") long id, @RequestBody User userInfo) {
 		try {
+			Optional<User> userData = userRepo.findById(id);
+			
 			if (userData.isPresent()) {
 				User updateUser = userData.get();
-				updateUser.setFirstName(user.getUserFirstName());
-				updateUser.setLastName(user.getUserLastName());
-				updateUser.setPhoneNumber(user.getUserPhoneNumber());
-				updateUser.setInstitution(user.getUserInstitution());
-				updateUser.setProgram(user.getUserProgram());
-				updateUser.setHobbies(user.getUserHobbies());
+				
+				updateUser.setFirstName(userInfo.getFirstName());
+				updateUser.setLastName(userInfo.getLastName());
+				updateUser.setPhoneNumber(userInfo.getPhoneNumber());
+				updateUser.setProgram(userInfo.getProgram());
+				updateUser.setInstitution(userInfo.getInstitution());
+				updateUser.setHobbies(userInfo.getHobbies());
 				
 				// DO NOT change the order of this line this needs to happen in order
 				userRepo.save(updateUser);
 			
-				// update the ENTIRE pair table when user update their preferences
-				updateAllPairs();
+				// update all the pairs containing the user after update their preferences
+				updateAllPairsWithMatchedUserId(id);
 				
 				return new ResponseEntity<>(updateUser, HttpStatus.OK);
 			} else {
@@ -111,8 +111,6 @@ public class UserController {
 		if (mainUserInstitution.equals(interestUserInstitution)) {
 			score += 2;
 		}
-		
-		
 		for (int i = 0; i < userHobbies.length; i++) {
 			for (int j = 0; j < interestUserHobbies.length; j++) {
 				if (userHobbies[i].replaceAll("\\s", "").equalsIgnoreCase(interestUserHobbies[j])) {
@@ -120,7 +118,6 @@ public class UserController {
 				}
 			}
 		}
-		
 		return score;
 	}
 	
@@ -155,5 +152,30 @@ public class UserController {
 			}
 		}
 		pairRepo.saveAll(pairList);
+	}
+	
+	// TODO: revision needed for optimization
+	public void updateAllPairsWithMatchedUserId(long userId) {
+		try {
+			Optional<User> userData = userRepo.findById(userId);
+			
+			if (userData.isPresent()) {
+				ArrayList<Pair> pairsContainUpdatedUser = new ArrayList<Pair>();
+				
+				// Iterate through this list which containing all records that have the "updated" user
+				// and recompute the MQP.
+				pairRepo.findAllPairsContainingUserById(userId).forEach(pairsContainUpdatedUser::add);
+				
+				for (Pair currentPair : pairsContainUpdatedUser) {					
+					User currentUser = currentPair.getUser();
+					User currentInterestUser = currentPair.getInterestUser();
+					double newMqp = calculateMatchQualityScore(currentUser, currentInterestUser);
+	
+					pairRepo.updatePairsMqpContainingUserId(currentPair.getPairId(), newMqp);	
+				}
+			}			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.studyapi.request.UserPairingRequest;
 import com.example.studybuddyapi.model.Pair;
 import com.example.studybuddyapi.model.User;
 import com.example.studybuddyapi.repositories.PairRepository;
@@ -71,17 +72,24 @@ public class PairController {
 		}
 	}
 	
-	@PutMapping("/pairs/{pairId}")
-	public ResponseEntity<Pair> updatePairData(@PathVariable("pairId") int id, @RequestBody Pair pair) {
+	@PutMapping("/pairs")
+	public ResponseEntity<Integer> updatePairData(@RequestBody UserPairingRequest pairingRequest) {
 		try {
-			Optional<Pair> pairData = pairRepo.findById(id);
+			Long mainUserId = pairingRequest.getUserId();
+			Long interestUserId = pairingRequest.getInterestUserId();
+			
+			boolean blockRequest = pairingRequest.isBlocking();
+			boolean interestRequest = pairingRequest.isInteresting();
+			
+			Optional<Pair> pairData = pairRepo.findByUserIdAndInterestUserId(mainUserId, interestUserId);
 			
 			if (pairData.isPresent()) {
-				Pair currentPair = pairData.get();
-				currentPair.setPaired(pair.isInterested());
-				currentPair.setBlocked(pair.isBlocked());
+				Pair pairInfo = pairData.get();
+				int pairId = pairInfo.getPairId();
 				
-				return new ResponseEntity<>(pairRepo.save(currentPair), HttpStatus.OK);
+				pairRepo.updatePairStatusOfUser(pairId, blockRequest, interestRequest);
+				
+				return new ResponseEntity<>(pairId, HttpStatus.OK);
 				
 			} else {
 				return new ResponseEntity<>(HttpStatus.FORBIDDEN);

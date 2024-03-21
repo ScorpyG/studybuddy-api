@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.example.studybuddyapi.model.Program;
 
-public interface ProgramRepository extends JpaRepository<Program, String> {
+public interface ProgramRepository extends JpaRepository<Program, Long> {
 	List<Program> findByTitle(String title);
 	List<Program> findByCode(String code);
 }

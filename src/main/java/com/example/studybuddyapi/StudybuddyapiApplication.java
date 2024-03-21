@@ -1,14 +1,21 @@
 package com.example.studybuddyapi;
 
+import java.util.ArrayList;
+import java.util.Random;
+
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 import com.example.studybuddyapi.model.Institution;
+import com.example.studybuddyapi.model.Pair;
 import com.example.studybuddyapi.model.Program;
+import com.example.studybuddyapi.model.User;
 import com.example.studybuddyapi.repositories.IntitutionRepository;
+import com.example.studybuddyapi.repositories.PairRepository;
 import com.example.studybuddyapi.repositories.ProgramRepository;
+import com.example.studybuddyapi.repositories.UserRepository;
 
 @SpringBootApplication
 public class StudybuddyapiApplication {
@@ -17,66 +24,114 @@ public class StudybuddyapiApplication {
 		SpringApplication.run(StudybuddyapiApplication.class, args);
 	}
 	
-	@Bean
-	ApplicationRunner initPrograms(ProgramRepository programRepo) {
-		return args -> {
-			programRepo.save(new Program("CSCI","Computer Science"));
-			programRepo.save(new Program("PSCI","Political Science"));
-			programRepo.save(new Program("BUS","Business"));
-			programRepo.save(new Program("ACCT","Accounting"));
-			programRepo.save(new Program("ECON","Economics"));
-			programRepo.save(new Program("ENGR","Engineering"));
-			programRepo.save(new Program("NURS","Nursing"));
-			programRepo.save(new Program("CHEM","Chemistry"));
-			programRepo.save(new Program("BIO","Biology"));
-			programRepo.save(new Program("PHYS","Physics"));
-			programRepo.save(new Program("GEOG","Geography"));
-			programRepo.save(new Program("MATH","Mathematics"));
-			programRepo.save(new Program("ENGL","English"));
-			programRepo.save(new Program("PHIL","Philosophy"));
-			programRepo.save(new Program("HIST","History"));
-			programRepo.save(new Program("PSYC","Psychology"));
-			programRepo.save(new Program("LAWS","Laws"));
-			programRepo.save(new Program("CRIM","Criminology"));
-			programRepo.save(new Program("FINC","Finance"));
-			programRepo.save(new Program("EDUC","Education"));
-			programRepo.save(new Program("MUSC","Musics"));
-			programRepo.save(new Program("PEFA","Performing & Fine Art"));
-			programRepo.save(new Program("SCMG","Supply Chain Management"));
-			
-			programRepo.findAll().forEach(System.out::println);
-		};
+	// duplicate the method
+	public double calculateMatchQualityScore(User mainUser, User interestUser) {
+		double score = 0;
+		
+		String mainUserPrg = mainUser.getProgram().getCode();
+		String interestUserPrg = interestUser.getProgram().getCode();
+		
+		String mainUserInstitution = mainUser.getInstitution().getInstitutionCode();
+		String interestUserInstitution = interestUser.getInstitution().getInstitutionCode();
+		String[] userHobbies = mainUser.getHobbies();
+		String[] interestUserHobbies = interestUser.getHobbies();		
+		
+		// check for program of both users match add 3 points to the score
+		if (mainUserPrg.equals(interestUserPrg)) {
+			score += 3;
+		}
+		
+		// check for institution of both users match add 2 points to the score
+		if (mainUserInstitution.equals(interestUserInstitution)) {
+			score += 2;
+		}
+		
+		for (int i = 0; i < userHobbies.length; i++) {
+			for (int j = 0; j < interestUserHobbies.length; j++) {
+				if (userHobbies[i].replaceAll("\\s", "").equalsIgnoreCase(interestUserHobbies[j])) {
+					score += 0.1;
+				}
+			}
+		}
+		
+		return score;
 	}
 	
+	private void loadTestData(ProgramRepository programRepo, IntitutionRepository institutionRepo, UserRepository userRepo, PairRepository pairRepo) {
+		// Create programs records
+		ArrayList<Program> programList = new ArrayList<>();
+		programList.add(new Program("CSCI","Computer Science")); 	// 0
+		programList.add(new Program("PSCI","Political Science")); 	// 1
+		programList.add(new Program("BUS","Business")); 			// 2
+		programList.add(new Program("ACCT","Accounting")); 			// 3
+		programList.add(new Program("ECON","Economics")); 			// 4
+		programList.add(new Program("ENGR","Engineering")); 		// 5
+		programList.add(new Program("NURS","Nursing"));	 			// 6
+		programList.add(new Program("CHEM","Chemistry")); 			// 7
+		programList.add(new Program("BIO","Biology")); 				// 8
+		programList.add(new Program("PHYS","Physics")); 			// 9
+		programList.add(new Program("GEOG","Geography")); 			// 10
+		programList.add(new Program("MATH","Mathematics")); 		// 11
+		programList.add(new Program("ENGL","English")); 			// 12
+		programList.add(new Program("PHIL","Philosophy")); 			// 13
+		programList.add(new Program("HIST","History")); 			// 14
+		programList.add(new Program("PSYC","Psychology")); 			// 15
+		programList.add(new Program("LAWS","Laws")); 				// 16
+		programList.add(new Program("CRIM","Criminology")); 		// 17
+		programRepo.saveAll(programList);
+		
+		// Create institutions records
+		ArrayList<Institution> institutionList = new ArrayList<>();
+		institutionList.add(new Institution("AJAE", "Douglas College", "700 Royal Ave", "New Westminster", "British Columbia","Canada")); 			// 0
+		institutionList.add(new Institution("AUAA", "University of British Columbia", "1874 East Mall", "Vancouver", "British Columbia","Canada")); // 1
+		institutionList.add(new Institution("AUAF", "University of Victoria", "3800 Finnerty Rd","Victoria", "British Columbia","Canada")); 		// 2
+		institutionList.add(new Institution("EUAX", "University of Waterloo", "200 University Ave W", "Waterloo", "Ontario", "Canada")); 			// 3
+		institutionList.add(new Institution("EUAV", "University of Toronto", "27 King's College Cir", "Toronto", "Ontario", "Canada")); 			// 4
+		institutionRepo.saveAll(institutionList);
+		
+	    String[] user1Hobbies = new String[] {"Chess", "Sudoku", "Journaling"};
+	    String[] user2Hobbies = new String[] {"Singing", "Swimming", "Chess"};
+	    String[] user3Hobbies = new String[] {"Basketball", "Knitting", "Poetry Writing"};
+	    String[] user4Hobbies = new String[] {"Reading", "Journaling", "Gardening"};
+	    
+		// Create users record
+		ArrayList<User> userList = new ArrayList<>();
+		userList.add(new User("testinguser1@test.com", "123456", "user 1", "testing", "111-111-1111", programList.get(0), institutionList.get(0), user1Hobbies));
+		userList.add(new User("testinguser2@test.com", "123456", "user 2", "testing", "111-111-2222", programList.get(1), institutionList.get(0), user2Hobbies));
+		userList.add(new User("testinguser3@test.com", "123456", "user 3", "testing", "111-111-3333", programList.get(2), institutionList.get(1), user3Hobbies));
+		userList.add(new User("testinguser4@test.com", "123456", "user 4", "testing", "111-111-4444", programList.get(3), institutionList.get(4), user4Hobbies));
+		userList.add(new User("testinguser5@test.com", "randomTest@123", "user 5", "tester", "111-222-5555", programList.get(1), institutionList.get(2), user3Hobbies));
+		userList.add(new User("testinguser6@test.com", "randomTest@666", "user 6", "tester", "999-222-6666", programList.get(10), institutionList.get(4), user2Hobbies));
+		userList.add(new User("testinguser7@test.com", "randomTest@123", "user 7", "tester", "111-222-7777", programList.get(4), institutionList.get(1), user1Hobbies));
+		userList.add(new User("testinguser8@test.com", "randomTest@123", "user 8", "tester", "111-222-8888", programList.get(6), institutionList.get(0), user4Hobbies));
+		userRepo.saveAll(userList);
+		
+		// Create pairs
+		ArrayList<Pair> pairList = new ArrayList<>();
+		for (int i = 0; i < userList.size(); i++) {
+			for (int j = 0; j < userList.size(); j++) {
+				if (i != j) {
+					double calculatedMqp = calculateMatchQualityScore(userList.get(i), userList.get(j));
+					Random rd = new Random();
+					Pair newPair = new Pair(userList.get(i), userList.get(j), calculatedMqp, rd.nextBoolean(), false);
+					pairList.add(newPair);
+				}
+			}
+		}
+		pairRepo.saveAll(pairList);
+  
+		System.out.print("\nServer is running on localhost:8080\n");
+		programRepo.findAll().forEach(System.out::println);
+		institutionRepo.findAll().forEach(System.out::println);
+		userRepo.findAll().forEach(System.out::println);
+		pairRepo.findAll().forEach(System.out::println);
+	}
+
 	@Bean
-	ApplicationRunner initInstitutions(IntitutionRepository institutionRepo) {
+	ApplicationRunner initPrograms(ProgramRepository programRepo, IntitutionRepository institutionRepo, UserRepository userRepo, PairRepository pairRepo) {
 		return args -> {
-			institutionRepo.save(
-					new Institution("AJAE", "Douglas College", "700 Royal Ave",
-							"New Westminster", "British Columbia","Canada")
-			);
-			institutionRepo.save(
-					new Institution("AUAA", "University of British Columbia", "1874 East Mall",
-							"Vancouver", "British Columbia","Canada")
-			);
-			institutionRepo.save(
-					new Institution("AUAE", "Simon Fraser University", "8888 University Drive",
-							"Burnaby", "British Columbia","Canada")
-			);
-			institutionRepo.save(
-					new Institution("AVAD", "Vancouver Community College", "250 West Pender St.",
-							"Vancouver", "British Columbia","Canada")
-			);
-			institutionRepo.save(
-					new Institution("AUAF", "University of Victoria", "3800 Finnerty Rd",
-							"Victoria", "British Columbia","Canada")
-			);
-			institutionRepo.save(
-					new Institution("AUAY", "University of the Fraser Valley", "33844 King Road",
-							"Abbotsford", "British Columbia","Canada")
-			);
-			
-			institutionRepo.findAll().forEach(System.out::println);
+			// populate the API with data
+			loadTestData(programRepo, institutionRepo, userRepo, pairRepo);
 		};
 	}
 }

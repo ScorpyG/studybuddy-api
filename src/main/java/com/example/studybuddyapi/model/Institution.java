@@ -1,20 +1,29 @@
 package com.example.studybuddyapi.model;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table (name = "institution")
+@Table (name = "institutions")
 public class Institution {
 	@Id
-	private String institution_id;
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long id;
+	
+	@Column (name = "institution_id", unique = true)
+	private String institutionCode;
 	
 	@Column (name = "name")
 	private String name;
@@ -31,14 +40,15 @@ public class Institution {
 	@Column (name = "country")
 	private String country;
 	
-	@OneToMany(mappedBy = "institution")
-	private List<User> users;
+	@OneToMany(mappedBy = "institution", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JsonIgnore
+	private Set<User> users = new HashSet<>();
 	
 	// Constructor
 	public Institution() {}
 	
-	public Institution(String id, String name, String address, String city, String state, String country) {
-		this.institution_id = id;
+	public Institution(String institutionCode, String name, String address, String city, String state, String country) {
+		this.institutionCode = institutionCode;
 		this.name = name;
 		this.address = address;
 		this.city = city;
@@ -47,8 +57,11 @@ public class Institution {
 	}
 
 	// Getters
-	public String getInstitution_id() {
-		return institution_id;
+	public long getId() {
+		return id;
+	}
+	public String getInstitutionCode() {
+		return institutionCode;
 	}
 	public String getName() {
 		return name;
@@ -67,8 +80,11 @@ public class Institution {
 	}
 	
 	// Setters
-	public void setInstitution_id(String institution_id) {
-		this.institution_id = institution_id;
+	public void setId(long id) {
+		this.id = id;
+	}
+	public void setInstitution_id(String institutionCode) {
+		this.institutionCode = institutionCode;
 	}
 	public void setName(String name) {
 		this.name = name;

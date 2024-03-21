@@ -1,7 +1,11 @@
 package com.example.studybuddyapi.model;
 
+import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -9,21 +13,22 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "users")
 public class User {
 	@Id
+	@Column(name = "user_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
 	@Column(name = "email", unique = true, nullable = false)
 	private String email;
 	
-	@Column(name = "password", nullable = false)
+	@Column(name = "password")
 	private String password;
 	
 	@Column(name = "firstName")
@@ -32,31 +37,37 @@ public class User {
 	@Column(name = "lastName")
 	private String lastName;
 	
-	@Column(name = "phone_number")
+	@Column(name = "phoneNumber")
 	private String phoneNumber;
-	
-	@ManyToOne(fetch = FetchType.EAGER, optional = false)
-	@JoinColumn(name = "code", nullable = false)
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "program_id")
 	private Program program;
 	
-	@ManyToOne(fetch = FetchType.EAGER, optional = false)
-	@JoinColumn(name = "institution_id", nullable = false)
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "institution_id")
 	private Institution institution;
-	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
-	private Set<Role> roles;
+
+	@Column(name = "hobbies")
+	private String[] hobbies;
+
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JsonIgnore
+	private Set<Pair> pairs = new HashSet<>();
 	
 	// Constructor
 	public User() {}
-	public User(String email, String password, String firstName, String lastName, String phoneNumber, Program program, Institution institude) {
+	public User(String email, String password, String firstName, String lastName, 
+			String phoneNumber, Program program, Institution institution, String[] hobbies
+	) {
 		this.email = email;
 		this.password = password;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.phoneNumber = phoneNumber;
 		this.program = program;
-		this.institution = institude;
+		this.institution = institution;
+		this.hobbies = hobbies;
 	}
 	
 	// Getters
@@ -84,8 +95,11 @@ public class User {
 	public Institution getInstitution() {
 		return institution;
 	}
-	public Set<Role> getRoles() {
-		return roles;
+	public String[] getHobbies() {
+		return hobbies;
+	}
+	public Set<Pair> getPairs() {
+		return pairs;
 	}
 	
 	// Setters
@@ -110,7 +124,11 @@ public class User {
 	public void setInstitution(Institution institution) {
 		this.institution = institution;
 	}
-	public void setRoles(Set<Role> roles) {
-		this.roles = roles;
+	public void setHobbies(String[] hobbies) {
+		this.hobbies = hobbies;
+	}
+	
+	public void setPairs(Set<Pair> pairs) {
+		this.pairs = pairs;
 	}
 }
